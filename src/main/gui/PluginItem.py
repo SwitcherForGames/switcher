@@ -30,11 +30,9 @@ class PluginItem(QWidget):
         # self.setAutoFillBackground(True)
         # self.setStyleSheet(
         #     r"""
-        #     QWidget {
         #     background-image: url("E:\Files\Projects\Pycharm\profile-switcher\plugins\warthunder\banner.jpg");
         #     background-repeat:no-repeat;
         #     background-position: center;
-        #     }
         #     """
         # )
 
@@ -45,3 +43,12 @@ class PluginItem(QWidget):
         # palette = QPalette()
         # palette.setBrush(QPalette.Background, QBrush(backgrnd))
         # self.setPalette(palette)
+
+        self.setAutoFillBackground(True)
+        backgrnd = QPixmap(
+            "E:\\Files\\Projects\\Pycharm\\profile-switcher\\plugins\\warthunder\\header.jpg"
+        )
+        # backgrnd = backgrnd.scaled(self.size(), Qt.KeepAspectRatioByExpanding)
+        palette = QPalette()
+        palette.setBrush(QPalette.Background, QBrush(backgrnd))
+        self.setPalette(palette)

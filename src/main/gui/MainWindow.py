@@ -16,7 +16,7 @@
 from PyQt5 import uic, QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPalette, QBrush
-from PyQt5.QtWidgets import QMainWindow, QListWidgetItem
+from PyQt5.QtWidgets import QMainWindow
 
 from src.main import resources
 from src.main.gui.MainGUI import MainGUI
@@ -41,37 +41,44 @@ class MainWindow(MainGUI, QMainWindow):
     def setup_ui(self) -> None:
         uic.loadUi(resources.get_layout(), self)
         # self.listwidget_plugins.setGraphicsEffect(QGraphicsBlurEffect())
-        self.listwidget_plugins.setStyleSheet(
-            r"""
-            QListWidget {
-            background-color: transparent;
-            border: none;
-            }
-            
-            QListWidget::item {
-            background-color:green;
-            }
-            
-            QListWidget::item::hover {
-            background-color:orange;
-            }
-            
-            # 
-            # QListWidget::item::selected {
-            # background-color:red;
-            # }
-            """
-        )
-        self.listwidget_plugins.currentItemChanged.connect(self.on_item_selected)
+        # self.listwidget_plugins.setStyleSheet(
+        r"""
+        QListWidget {
+        background-color: transparent;
+        border: none;
+        }
+        
+        QListWidget::item {
+        background-color:green;
+        }
+        
+        QListWidget::item::hover {
+        background-color:orange;
+        }
+        
+        # 
+        # QListWidget::item::selected {
+        # background-color:red;
+        # }
+        """
+        # )
+        self.left.setAlignment(Qt.AlignTop)
 
         for p in self.handler.plugins:
-            item = QListWidgetItem(self.listwidget_plugins)
-            self.listwidget_plugins.addItem(item)
+            # item = QListWidgetItem(self.listwidget_plugins)
+            # self.listwidget_plugins.addItem(item)
 
             w = PluginItem(p.get_name())
-            item.setSizeHint(w.minimumSizeHint())
+            height = 215
+            width = 460
+            w.setFixedHeight(height)
+            w.setFixedWidth(width)
+            # w.setStyleSheet("background-color:green;")
+            # item.setSizeHint(w.minimumSizeHint())
 
-            self.listwidget_plugins.setItemWidget(item, w)
+            # self.listwidget_plugins.setItemWidget(item, w)
+            self.left.addWidget(w)
+            # self.left.setAlignment(w, Qt.AlignTop)
 
         # self.centralWidget().setStyleSheet("border-image: url(\"plugins/banner.jpg\") 0 0 0 0 stretch stretch; background-position: center; ")
         # # background-image: url("E:\Files\Projects\Pycharm\profile-switcher\plugins\warthunder\banner.jpg");
@@ -83,11 +90,4 @@ class MainWindow(MainGUI, QMainWindow):
         backgrnd = backgrnd.scaled(self.size(), Qt.KeepAspectRatioByExpanding)
         palette = QPalette()
         palette.setBrush(QPalette.Background, QBrush(backgrnd))
-        self.setPalette(palette)
-
-    def on_item_selected(self, current, previous):
-        for item in [
-            self.listwidget_plugins.item(i)
-            for i in range(self.listwidget_plugins.count() - 1)
-        ]:
-            item
+        # self.setPalette(palette)

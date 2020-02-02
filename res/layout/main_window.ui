@@ -18,11 +18,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="2,5">
       <item>
-       <layout class="QVBoxLayout" name="left">
-        <item>
-         <widget class="QListWidget" name="listwidget_plugins"/>
-        </item>
-       </layout>
+       <layout class="QVBoxLayout" name="left"/>
       </item>
       <item>
        <layout class="QVBoxLayout" name="right"/>
