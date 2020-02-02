@@ -13,11 +13,14 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
+from enum import Enum
+from typing import Tuple
 
 
-def get_layout() -> str:
-    return f"res/layout/main_window.ui"
+class ProfileType(Enum):
+    GRAPHICS = 0
+    KEYMAP = 1
 
-
-def get_plugin_item_layout() -> str:
-    return f"res/layout/plugin_item.ui"
+    @staticmethod
+    def all() -> Tuple["ProfileType", ...]:
+        return ProfileType.GRAPHICS, ProfileType.KEYMAP

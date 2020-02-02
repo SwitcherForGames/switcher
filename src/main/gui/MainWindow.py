@@ -13,17 +13,81 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5 import uic, QtGui
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap, QPalette, QBrush
+from PyQt5.QtWidgets import QMainWindow, QListWidgetItem
 
 from src.main import resources
+from src.main.gui.MainGUI import MainGUI
+from src.main.gui.PluginItem import PluginItem
 
 
-class MainWindow(QMainWindow):
+class MainWindow(MainGUI, QMainWindow):
+    """
+    The main window of the application.
+    """
+
     def __init__(self, application):
-        super(MainWindow, self).__init__()
+        MainGUI.__init__(self)
+        QMainWindow.__init__(self)
+
         self.application = application
+        self.handler = application.handler
+
+        self.handler.initialise()
         self.setup_ui()
 
     def setup_ui(self) -> None:
         uic.loadUi(resources.get_layout(), self)
+        # self.listwidget_plugins.setGraphicsEffect(QGraphicsBlurEffect())
+        self.listwidget_plugins.setStyleSheet(
+            r"""
+            QListWidget {
+            background-color: transparent;
+            border: none;
+            }
+            
+            QListWidget::item {
+            background-color:green;
+            }
+            
+            QListWidget::item::hover {
+            background-color:orange;
+            }
+            
+            # 
+            # QListWidget::item::selected {
+            # background-color:red;
+            # }
+            """
+        )
+        self.listwidget_plugins.currentItemChanged.connect(self.on_item_selected)
+
+        for p in self.handler.plugins:
+            item = QListWidgetItem(self.listwidget_plugins)
+            self.listwidget_plugins.addItem(item)
+
+            w = PluginItem(p.get_name())
+            item.setSizeHint(w.minimumSizeHint())
+
+            self.listwidget_plugins.setItemWidget(item, w)
+
+        # self.centralWidget().setStyleSheet("border-image: url(\"plugins/banner.jpg\") 0 0 0 0 stretch stretch; background-position: center; ")
+        # # background-image: url("E:\Files\Projects\Pycharm\profile-switcher\plugins\warthunder\banner.jpg");
+
+    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
+        backgrnd = QPixmap(
+            "E:\\Files\\Projects\\Pycharm\\profile-switcher\\plugins\\warthunder\\background.png"
+        )
+        backgrnd = backgrnd.scaled(self.size(), Qt.KeepAspectRatioByExpanding)
+        palette = QPalette()
+        palette.setBrush(QPalette.Background, QBrush(backgrnd))
+        self.setPalette(palette)
+
+    def on_item_selected(self, current, previous):
+        for item in [
+            self.listwidget_plugins.item(i)
+            for i in range(self.listwidget_plugins.count() - 1)
+        ]:
+            item

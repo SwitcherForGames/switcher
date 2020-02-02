@@ -13,11 +13,11 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
+from PyQt5.QtWidgets import QVBoxLayout, QListWidget
 
 
-def get_layout() -> str:
-    return f"res/layout/main_window.ui"
-
-
-def get_plugin_item_layout() -> str:
-    return f"res/layout/plugin_item.ui"
+class MainGUI:
+    def __init__(self):
+        self.left: QVBoxLayout = None
+        self.right: QVBoxLayout = None
+        self.listwidget_plugins: QListWidget = None

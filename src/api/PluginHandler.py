@@ -15,7 +15,7 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import importlib
 import os
-from typing import Optional
+from typing import Optional, List
 
 from src.api.Platform import Platform
 from src.api.Plugin import Plugin
@@ -25,13 +25,15 @@ class PluginHandler:
     plugins_folder = "plugins"
 
     def __init__(self):
-        self.plugins = []
+        self.plugins: List[Plugin] = []
+
+    def initialise(self) -> None:
         self.import_plugins_folder()
 
         for folder in os.listdir(self.plugins_folder):
             module = self.import_plugin_module(folder)
             if module:
-                plugin = module.plugin(Platform.get())
+                plugin: Plugin = module.plugin(Platform.get())
                 self.plugins.append(plugin)
 
     def import_plugins_folder(self):
