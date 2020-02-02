@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1116</width>
-    <height>799</height>
+    <width>1305</width>
+    <height>976</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,11 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="2,5">
       <item>
-       <layout class="QVBoxLayout" name="left"/>
+       <layout class="QVBoxLayout" name="left">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+       </layout>
       </item>
       <item>
        <layout class="QVBoxLayout" name="right"/>
@@ -32,7 +36,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1116</width>
+     <width>1305</width>
      <height>26</height>
     </rect>
    </property>

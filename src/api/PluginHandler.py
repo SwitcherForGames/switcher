@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import importlib
+import logging
 import os
 from typing import Optional, List
 
@@ -22,6 +23,10 @@ from src.api.Plugin import Plugin
 
 
 class PluginHandler:
+    """
+    Class which handles importing plugins.
+    """
+
     plugins_folder = "plugins"
 
     def __init__(self):
@@ -36,14 +41,23 @@ class PluginHandler:
                 plugin: Plugin = module.plugin(Platform.get())
                 self.plugins.append(plugin)
 
-    def import_plugins_folder(self):
+    def import_plugins_folder(self) -> None:
+        """
+        Imports the plguins folder. This must be done before importing any plugins in subfolders.
+        """
         importlib.import_module(self.plugins_folder)
 
     def import_plugin_module(self, folder: str) -> Optional[Plugin]:
+        """
+        Imports a plugin as a module.
+
+        :param folder: the folder to import the plugin from
+        :return: the name of the imported module
+        """
         module_name = f"{self.plugins_folder}.{folder}.init"
         try:
             imported = importlib.import_module(module_name, package=self.plugins_folder)
-            print(f"Imported plugin: {module_name}")
+            logging.info(f"Imported plugin: {module_name}")
             return imported
         except Exception as e:
             print(e)

@@ -27,6 +27,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import asyncio
+import logging
 import os
 import signal
 import sys
@@ -38,6 +39,9 @@ from qasync import QEventLoop
 from src.main.gui.Application import Application
 
 if __name__ == "__main__":
+    # Initialise logging.
+    logging.basicConfig(filename="switcher.log", level=logging.DEBUG)
+
     # Fix Ctrl-C behaviour with PyQt.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 

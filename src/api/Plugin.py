@@ -14,11 +14,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import inspect
+import logging
+import os
 from abc import ABC, abstractmethod
 from os import path
-from typing import Dict
+from typing import Dict, Optional, final
 
 import yaml
+from pip._vendor import requests
+from scheduler.Scheduler import Scheduler
 
 from src.api.Platform import Platform
 
@@ -32,7 +36,6 @@ class Plugin(ABC):
         super(Plugin, self).__init__()
         self.platform = platform
         self.yaml = self.load_yaml()
-        print(self.yaml)
         self.initialise()
 
     @abstractmethod
@@ -70,21 +73,82 @@ class Plugin(ABC):
         pass
 
     def load_yaml(self) -> Dict:
-        class_location = inspect.getfile(self.__class__)
-        folder_location = path.abspath(path.dirname(class_location))
+        folder_location = self.here()
         yaml_location = path.join(folder_location, "plugin.yaml")
 
         with open(yaml_location, "r") as stream:
             return yaml.safe_load(stream)
 
-    def get_name(self) -> str:
-        return self.yaml["name"]
+    @final
+    async def get_header(self) -> Optional[str]:
+        """
+        Gets the path to the  header image. If it needs to be downloaded, it will download the image first.
 
+        :return: the absolute file path to the header image
+        """
+        items = os.listdir(self.here())
+        stripped = [path.splitext(i)[0] for i in items]
+        header = "header"
+
+        # Check if header already exists.
+        if header in stripped:
+            name = items[stripped.index(header)]
+            return path.join(self.here(), name)
+
+        return await self._download_header()
+
+    async def _download_header(self) -> Optional[str]:
+        """
+        Downloads the header image. By default it will use the image from the Steam page.
+
+        :return: the absolute file path to the downloaded header image
+        """
+        steam_id = self.yaml.get("steamID")
+        if not steam_id:
+            return None
+
+        url = f"http://cdn.akamai.steamstatic.com/steam/apps/{steam_id}/header.jpg"
+        self.scheduler = Scheduler()
+        self.scheduler.add(target=self._perform_download, args=(url, "header"))
+        result = await self.scheduler.run()
+        return result[0]
+
+    def _perform_download(self, url: str, filename: str, ext: str = "jpg") -> str:
+        logging.info(f"Downloading header image from {url} as {filename}")
+        data = requests.get(url).content
+        filepath = f"{path.join(self.here(), filename)}.{ext}"
+        with open(filepath, "wb") as handler:
+            handler.write(data)
+
+        return filepath
+
+    @final
+    def here(self) -> str:
+        """
+        Returns the absolute path to the folder containing the current plugin class.
+
+        NOTE: '__file__' cannot be used because it returns the path to the abstract Plugin class,
+        not the desired plugin implementation.
+        """
+        class_location = inspect.getfile(self.__class__)
+        return path.abspath(path.dirname(class_location))
+
+    @final
+    def get_name(self) -> str:
+        return self.yaml.get("name")
+
+    @final
+    def get_api_level(self) -> int:
+        return self.yaml.get("api")
+
+    @final
     def is_windows(self) -> bool:
         return self.platform == Platform.WINDOWS
 
+    @final
     def is_mac(self) -> bool:
         return self.platform == Platform.MAC_OS
 
+    @final
     def is_linux(self) -> bool:
         return self.platform == Platform.LINUX

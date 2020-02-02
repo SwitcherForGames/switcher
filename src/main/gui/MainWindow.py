@@ -13,6 +13,8 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
+import asyncio
+
 from PyQt5 import uic, QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPalette, QBrush
@@ -40,48 +42,13 @@ class MainWindow(MainGUI, QMainWindow):
 
     def setup_ui(self) -> None:
         uic.loadUi(resources.get_layout(), self)
-        # self.listwidget_plugins.setGraphicsEffect(QGraphicsBlurEffect())
-        # self.listwidget_plugins.setStyleSheet(
-        r"""
-        QListWidget {
-        background-color: transparent;
-        border: none;
-        }
-        
-        QListWidget::item {
-        background-color:green;
-        }
-        
-        QListWidget::item::hover {
-        background-color:orange;
-        }
-        
-        # 
-        # QListWidget::item::selected {
-        # background-color:red;
-        # }
-        """
-        # )
         self.left.setAlignment(Qt.AlignTop)
 
         for p in self.handler.plugins:
-            # item = QListWidgetItem(self.listwidget_plugins)
-            # self.listwidget_plugins.addItem(item)
-
-            w = PluginItem(p.get_name())
-            height = 215
-            width = 460
-            w.setFixedHeight(height)
-            w.setFixedWidth(width)
-            # w.setStyleSheet("background-color:green;")
-            # item.setSizeHint(w.minimumSizeHint())
-
-            # self.listwidget_plugins.setItemWidget(item, w)
+            w = PluginItem(p)
             self.left.addWidget(w)
-            # self.left.setAlignment(w, Qt.AlignTop)
 
-        # self.centralWidget().setStyleSheet("border-image: url(\"plugins/banner.jpg\") 0 0 0 0 stretch stretch; background-position: center; ")
-        # # background-image: url("E:\Files\Projects\Pycharm\profile-switcher\plugins\warthunder\banner.jpg");
+            asyncio.ensure_future(w.coro_initialise())
 
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
         backgrnd = QPixmap(

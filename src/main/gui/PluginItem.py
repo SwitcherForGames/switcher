@@ -14,41 +14,35 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 from PyQt5 import uic
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import QWidget
 
+from src.api.Plugin import Plugin
 from src.main import resources
 
 
 class PluginItem(QWidget):
-    def __init__(self, game: str):
+    def __init__(self, plugin: Plugin):
         super(PluginItem, self).__init__()
+        self.plugin = plugin
         uic.loadUi(resources.get_plugin_item_layout(), self)
 
-        self.lbl_name.setText(game)
-        # self.setAutoFillBackground(True)
-        # self.setStyleSheet(
-        #     r"""
-        #     background-image: url("E:\Files\Projects\Pycharm\profile-switcher\plugins\warthunder\banner.jpg");
-        #     background-repeat:no-repeat;
-        #     background-position: center;
-        #     """
-        # )
-
-        # p = self.palette()
-        # p.setColor(self.backgroundRole(), Qt.red)
-        # backgrnd = QPixmap("E:\\Files\\Projects\\Pycharm\\profile-switcher\\plugins\\warthunder\\banner.jpg")
-        # backgrnd = backgrnd.scaled(self.size(), Qt.IgnoreAspectRatio)
-        # palette = QPalette()
-        # palette.setBrush(QPalette.Background, QBrush(backgrnd))
-        # self.setPalette(palette)
+        height = 215
+        width = 460
+        self.setFixedHeight(height)
+        self.setFixedWidth(width)
+        self.setContentsMargins(0, 0, 0, 0)
 
         self.setAutoFillBackground(True)
-        backgrnd = QPixmap(
-            "E:\\Files\\Projects\\Pycharm\\profile-switcher\\plugins\\warthunder\\header.jpg"
-        )
-        # backgrnd = backgrnd.scaled(self.size(), Qt.KeepAspectRatioByExpanding)
+
+        self.indicator.setVisible(False)
+        self.mousePressEvent = self.onclick
+
+    async def coro_initialise(self) -> None:
+        backgrnd = QPixmap(await self.plugin.get_header())
         palette = QPalette()
         palette.setBrush(QPalette.Background, QBrush(backgrnd))
         self.setPalette(palette)
+
+    def onclick(self, event):
+        self.indicator.setVisible(not self.indicator.isVisible())
