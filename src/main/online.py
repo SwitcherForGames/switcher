@@ -32,10 +32,21 @@ from github import Github
 
 whitelist = ["TheGreatCabbage"]
 g = Github()
+template = "Switcher plugin for "
 
 
 def find_online_plugins() -> Tuple[List, List]:
     plugins = search_plugins()
+    for p in plugins:
+        description = p.description
+
+        if len(description) > len(template):
+            game = description[len(template) :]
+        else:
+            game = description
+
+        p.game = game
+
     trusted = [p for p in plugins if p.owner in whitelist]
     untrusted = [p for p in plugins if p not in trusted]
 

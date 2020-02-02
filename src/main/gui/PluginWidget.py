@@ -15,11 +15,17 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPalette, QBrush
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QPixmap, QPalette, QBrush, QColor
+from PyQt5.QtWidgets import QWidget, QGraphicsColorizeEffect
 
 from src.api.Plugin import Plugin
 from src.main import resources
+
+color1 = QColor(255, 255, 0)
+strength1 = 0.05
+
+color2 = QColor(0, 0, 0)
+strength2 = 0.1
 
 
 class PluginWidget(QWidget):
@@ -41,6 +47,12 @@ class PluginWidget(QWidget):
 
         self.exact_size = (width, height)
 
+        self.active = False
+        self.effect = self.get_effect()
+        self.setGraphicsEffect(self.effect)
+
+        self.on_activation_changed()
+
     async def coro_initialise(self) -> None:
         backgrnd = QPixmap(await self.plugin.get_header())
         backgrnd = backgrnd.scaled(self.size(), transformMode=Qt.SmoothTransformation)
@@ -48,5 +60,23 @@ class PluginWidget(QWidget):
         palette.setBrush(QPalette.Background, QBrush(backgrnd))
         self.setPalette(palette)
 
+        self.setGraphicsEffect(self.effect)
+
     def onclick(self, event):
-        self.indicator.setVisible(not self.indicator.isVisible())
+        # self.indicator.setVisible(not self.indicator.isVisible())
+        self.active = not self.active
+        self.on_activation_changed()
+
+    def on_activation_changed(self):
+        if self.active:
+            self.effect.setColor(color1)
+            self.effect.setStrength(strength1)
+        else:
+            self.effect.setColor(color2)
+            self.effect.setStrength(strength2)
+
+    def get_effect(self):
+        effect = QGraphicsColorizeEffect()
+        effect.setColor(color2)
+        effect.setStrength(strength2)
+        return effect

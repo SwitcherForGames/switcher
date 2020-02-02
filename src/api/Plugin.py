@@ -135,7 +135,7 @@ class Plugin(ABC):
 
     @final
     def get_name(self) -> str:
-        return self.yaml.get("name")
+        return self.yaml.get("game")
 
     @final
     def get_api_level(self) -> int:

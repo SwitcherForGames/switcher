@@ -23,9 +23,9 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QPushButton" name="btn_get_plugins">
+         <widget class="QPushButton" name="btn_plugins">
           <property name="text">
-           <string>Get plugins</string>
+           <string>Manage plugins</string>
           </property>
          </widget>
         </item>

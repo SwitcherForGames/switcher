@@ -21,4 +21,4 @@ class MainGUI:
         self.left: QVBoxLayout = None
         self.right: QVBoxLayout = None
         self.listwidget_plugins: QListWidget = None
-        self.btn_get_plugins: QPushButton = None
+        self.btn_plugins: QPushButton = None
