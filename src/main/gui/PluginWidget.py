@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 from PyQt5 import uic
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import QWidget
 
@@ -21,9 +22,9 @@ from src.api.Plugin import Plugin
 from src.main import resources
 
 
-class PluginItem(QWidget):
+class PluginWidget(QWidget):
     def __init__(self, plugin: Plugin):
-        super(PluginItem, self).__init__()
+        super(PluginWidget, self).__init__()
         self.plugin = plugin
         uic.loadUi(resources.get_plugin_item_layout(), self)
 
@@ -38,8 +39,11 @@ class PluginItem(QWidget):
         self.indicator.setVisible(False)
         self.mousePressEvent = self.onclick
 
+        self.exact_size = (width, height)
+
     async def coro_initialise(self) -> None:
         backgrnd = QPixmap(await self.plugin.get_header())
+        backgrnd = backgrnd.scaled(self.size(), transformMode=Qt.SmoothTransformation)
         palette = QPalette()
         palette.setBrush(QPalette.Background, QBrush(backgrnd))
         self.setPalette(palette)

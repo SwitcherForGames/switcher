@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-from PyQt5.QtWidgets import QVBoxLayout, QListWidget
+from PyQt5.QtWidgets import QVBoxLayout, QListWidget, QPushButton
 
 
 class MainGUI:
@@ -21,3 +21,4 @@ class MainGUI:
         self.left: QVBoxLayout = None
         self.right: QVBoxLayout = None
         self.listwidget_plugins: QListWidget = None
+        self.btn_get_plugins: QPushButton = None

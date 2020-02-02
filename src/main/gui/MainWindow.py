@@ -14,15 +14,17 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import asyncio
+from typing import List
 
 from PyQt5 import uic, QtGui
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import QMainWindow
+from scheduler.Scheduler import Scheduler
 
 from src.main import resources
 from src.main.gui.MainGUI import MainGUI
-from src.main.gui.PluginItem import PluginItem
+from src.main.gui.PluginWidget import PluginWidget
 
 
 class MainWindow(MainGUI, QMainWindow):
@@ -34,6 +36,8 @@ class MainWindow(MainGUI, QMainWindow):
         MainGUI.__init__(self)
         QMainWindow.__init__(self)
 
+        self.plugin_widgets: List[PluginWidget] = []
+
         self.application = application
         self.handler = application.handler
 
@@ -42,13 +46,16 @@ class MainWindow(MainGUI, QMainWindow):
 
     def setup_ui(self) -> None:
         uic.loadUi(resources.get_layout(), self)
-        self.left.setAlignment(Qt.AlignTop)
+        self.btn_get_plugins.clicked.connect(self.get_plugins)
 
+        self.left.setAlignment(Qt.AlignTop)
         for p in self.handler.plugins:
-            w = PluginItem(p)
+            w = PluginWidget(p)
             self.left.addWidget(w)
 
-            asyncio.ensure_future(w.coro_initialise())
+            self.plugin_widgets.append(w)
+
+        self.resize_plugin_widgets()
 
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
         backgrnd = QPixmap(
@@ -58,3 +65,34 @@ class MainWindow(MainGUI, QMainWindow):
         palette = QPalette()
         palette.setBrush(QPalette.Background, QBrush(backgrnd))
         # self.setPalette(palette)
+
+        self.resize_plugin_widgets()
+
+    @pyqtSlot()
+    def get_plugins(self) -> None:
+        pass
+
+    async def coro_get_plugins(self):
+        self.scheduler = Scheduler()
+
+    def resize_plugin_widgets(self):
+        window_height = self.height()
+        count = max(5, len(self.plugin_widgets))
+
+        widget_height = window_height / count
+        cap = 250
+
+        for w in self.plugin_widgets:
+            _width, _height = w.exact_size
+            if widget_height > cap:
+                widget_height = cap
+
+            aspect_ratio = _width / _height
+            widget_width = widget_height * aspect_ratio
+
+            w.setFixedHeight(widget_height)
+            w.setFixedWidth(widget_width)
+
+            w.exact_size = (widget_width, widget_height)
+
+            asyncio.ensure_future(w.coro_initialise())
