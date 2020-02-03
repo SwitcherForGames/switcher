@@ -92,7 +92,7 @@ class MainWindow(MainGUI, QMainWindow):
         trusted, community = (await self.scheduler.run())[0]
 
         for p in trusted + community:
-            print(p, p.description)
+            print(p.description)
             checkbox = QStandardItem(True)
             checkbox.setCheckable(True)
             checkbox.setCheckState(Qt.Checked)
@@ -102,6 +102,9 @@ class MainWindow(MainGUI, QMainWindow):
             model.appendRow(
                 [QStandardItem(p.game), QStandardItem(p.owner.login), checkbox]
             )
+
+        self.tbl1.resizeColumnsToContents()
+        self.tbl2.resizeColumnsToContents()
 
     def on_apply_clicked(self):
         pass

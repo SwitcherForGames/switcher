@@ -41,7 +41,7 @@ def find_online_plugins() -> Tuple[List, List]:
         description = p.description
 
         if len(description) > len(template):
-            game = description[len(template) :]
+            game = description[len(template) : -1]
         else:
             game = description
 
@@ -49,6 +49,10 @@ def find_online_plugins() -> Tuple[List, List]:
 
     trusted = [p for p in plugins if p.owner in whitelist]
     untrusted = [p for p in plugins if p not in trusted]
+
+    _sort = lambda f: f.game
+    trusted.sort(key=_sort)
+    untrusted.sort(key=_sort)
 
     return trusted, untrusted
 
