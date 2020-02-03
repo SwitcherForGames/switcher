@@ -30,9 +30,13 @@ from typing import Tuple, List
 
 from github import Github
 
-whitelist = ["TheGreatCabbage"]
-g = Github()
 template = "Switcher plugin for "
+whitelist = {
+    "TheGreatCabbage": "TheGreatCabbage",
+    "switcher-for-games": "Switcher For Games",
+}
+
+g = Github()
 
 
 def find_online_plugins() -> Tuple[List, List]:
@@ -46,13 +50,16 @@ def find_online_plugins() -> Tuple[List, List]:
             game = description
 
         p.game = game
+        p.author = p.owner.login
+
+        if alias := whitelist.get(p.author):
+            p.author = alias
 
     trusted = [p for p in plugins if p.owner in whitelist]
     untrusted = [p for p in plugins if p not in trusted]
 
-    _sort = lambda f: f.game
-    trusted.sort(key=_sort)
-    untrusted.sort(key=_sort)
+    for _list in (trusted, untrusted):
+        _list.sort(key=lambda f: f.game)
 
     return trusted, untrusted
 

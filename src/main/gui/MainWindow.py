@@ -99,9 +99,7 @@ class MainWindow(MainGUI, QMainWindow):
             checkbox.setText("Installed")
             checkbox.checkState()
 
-            model.appendRow(
-                [QStandardItem(p.game), QStandardItem(p.owner.login), checkbox]
-            )
+            model.appendRow([QStandardItem(p.game), QStandardItem(p.author), checkbox])
 
         self.tbl1.resizeColumnsToContents()
         self.tbl2.resizeColumnsToContents()
