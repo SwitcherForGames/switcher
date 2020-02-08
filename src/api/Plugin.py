@@ -20,10 +20,11 @@ from abc import ABC, abstractmethod
 from os import path
 from typing import Dict, Optional, final
 
+import requests
 import yaml
-from pip._vendor import requests
 from scheduler.Scheduler import Scheduler
 
+from src.api.Keys import Keys
 from src.api.Platform import Platform
 
 
@@ -43,9 +44,9 @@ class Plugin(ABC):
         pass
 
     @abstractmethod
-    def identify(self, folder_path: str) -> bool:
+    def verify(self, folder_path: str) -> bool:
         r"""
-        Identify whether a particular (absolute) file path belongs to the game handled by this plugin.
+        Verify whether a particular (absolute) file path belongs to the game handled by this plugin.
 
         This should return True when the full path to the folder containing the game is supplied as a parameter.
         For example, "D:\Program Files\SteamLibrary\steamapps\common\War Thunder" would return True for a
@@ -73,6 +74,11 @@ class Plugin(ABC):
         pass
 
     def load_yaml(self) -> Dict:
+        """
+        Loads the plugin's YAML file and returns a dictionary with the parsed contents.
+
+        :return: dictionary containing the keys and values from the YAML file
+        """
         folder_location = self.here()
         yaml_location = path.join(folder_location, "plugin.yaml")
 
@@ -103,7 +109,7 @@ class Plugin(ABC):
 
         :return: the absolute file path to the downloaded header image
         """
-        steam_id = self.yaml.get("steamID")
+        steam_id = self.yaml.get(Keys.STEAM_ID)
         if not steam_id:
             return None
 
@@ -135,11 +141,11 @@ class Plugin(ABC):
 
     @final
     def get_name(self) -> str:
-        return self.yaml.get("game")
+        return self.yaml.get(Keys.GAME)
 
     @final
     def get_api_level(self) -> int:
-        return self.yaml.get("api")
+        return self.yaml.get(Keys.API_VERSION)
 
     @final
     def is_windows(self) -> bool:

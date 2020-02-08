@@ -29,12 +29,10 @@
 from typing import Tuple, List
 
 from github import Github
+from github.PaginatedList import PaginatedList
 
 template = "Switcher plugin for "
-whitelist = {
-    "TheGreatCabbage": "TheGreatCabbage",
-    "switcher-for-games": "Switcher For Games",
-}
+whitelist = {"SwitcherForGames": "Switcher For Games"}
 
 g = Github()
 
@@ -45,7 +43,11 @@ def find_online_plugins() -> Tuple[List, List]:
         description = p.description
 
         if len(description) > len(template):
-            game = description[len(template) : -1]
+            game = description[len(template) :]
+
+            # Remove full stop if it exists.
+            if game.endswith("."):
+                game = game[:-1]
         else:
             game = description
 
@@ -64,6 +66,6 @@ def find_online_plugins() -> Tuple[List, List]:
     return trusted, untrusted
 
 
-def search_plugins():
+def search_plugins() -> PaginatedList:
     repos = g.search_repositories(query="topic:switcher-plugin")
     return repos

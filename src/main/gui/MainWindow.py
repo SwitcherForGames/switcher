@@ -92,13 +92,13 @@ class MainWindow(MainGUI, QMainWindow):
         trusted, community = (await self.scheduler.run())[0]
 
         for p in trusted + community:
-            print(p.description)
             checkbox = QStandardItem(True)
             checkbox.setCheckable(True)
             checkbox.setCheckState(Qt.Checked)
             checkbox.setText("Installed")
             checkbox.checkState()
 
+            print(p.description)
             model.appendRow([QStandardItem(p.game), QStandardItem(p.author), checkbox])
 
         self.tbl1.resizeColumnsToContents()
@@ -108,7 +108,8 @@ class MainWindow(MainGUI, QMainWindow):
         pass
 
     def on_item_changed(self, item):
-        print("Changed")
+        # print(self.plugins.get(item))
+        pass
 
     def resize_plugin_widgets(self):
         window_height = self.height()
