@@ -24,6 +24,7 @@ import requests
 import yaml
 from scheduler.Scheduler import Scheduler
 
+from api.Launcher import Launcher
 from src.api.Keys import Keys
 from src.api.Platform import Platform
 
@@ -43,7 +44,6 @@ class Plugin(ABC):
     def initialise(self) -> None:
         pass
 
-    @abstractmethod
     def verify(self, folder_path: str) -> bool:
         r"""
         Verify whether a particular (absolute) file path belongs to the game handled by this plugin.
@@ -55,7 +55,14 @@ class Plugin(ABC):
         :param folder_path: the path to the folder being examined
         :return: whether the path belongs to the desired game
         """
-        pass
+        paths = self.get(Keys.VERIFICATION_PATHS)
+        assert paths, (
+            "Verification paths have not been defined. These are required to check if the game exists at a "
+            "location. "
+        )
+
+        here = self.here()
+        return all([os.path.exists(os.path.join(here, p)) for p in paths])
 
     @abstractmethod
     def save_profile(self, *types) -> None:
@@ -127,6 +134,32 @@ class Plugin(ABC):
             handler.write(data)
 
         return filepath
+
+    def get(self, key: Keys) -> Optional:
+        """
+        Gets the value of an item from the YAML file.
+
+        :param key: the key for the item, as a Keys enum
+        :return: the value if it exists, or None if it does not exist
+        """
+        return self.yaml.get(key.value)
+
+    def launch_game(self, launcher: Launcher) -> bool:
+        """
+        Launches a game with a specified launcher.
+
+        :param launcher: the launcher to use
+        :return: whether the game was launched successfully
+        """
+        if launcher is Launcher.STEAM:
+            os.system(
+                f'C:"\\Program Files (x86)"\\Steam\\Steam.exe steam://rungameid/{self.get(Keys.STEAM_ID)}'
+            )
+            return True
+        elif launcher is Launcher.STANDALONE:
+            return False
+
+        return False
 
     @final
     def here(self) -> str:

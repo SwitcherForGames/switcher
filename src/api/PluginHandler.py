@@ -16,8 +16,10 @@
 import importlib
 import logging
 import os
+from os.path import join
 from typing import Optional, List
 
+from api.CodelessPlugin import CodelessPlugin
 from src.api.Platform import Platform
 from src.api.Plugin import Plugin
 
@@ -36,9 +38,18 @@ class PluginHandler:
         self.import_plugins_folder()
 
         for folder in os.listdir(self.plugins_folder):
-            module = self.import_plugin_module(folder)
-            if module:
-                plugin: Plugin = module.plugin(Platform.get())
+            if "init.py" in os.listdir(join(self.plugins_folder, folder)):
+                module = self.import_plugin_module(folder)
+                if module:
+                    print(f"Loading normal plugin: {folder}")
+                    plugin: Plugin = module.plugin(Platform.get())
+            else:
+                print(f"Loading codeless plugin: {folder}")
+                plugin: Plugin = CodelessPlugin(
+                    Platform.get(), join(self.plugins_folder, folder)
+                )
+
+            if plugin:
                 self.plugins.append(plugin)
 
     def import_plugins_folder(self) -> None:

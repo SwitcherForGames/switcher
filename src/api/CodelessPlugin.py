@@ -13,8 +13,8 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-import os
 
+from api.Platform import Platform
 from src.api.Keys import Keys
 from src.api.Plugin import Plugin
 
@@ -26,23 +26,16 @@ class CodelessPlugin(Plugin):
     Codeless plugins only require a YAML file to define their functionality.
     """
 
+    def __init__(self, platform: Platform, path: str):
+        self.here = lambda: path
+        super(CodelessPlugin, self).__init__(platform)
+
     def initialise(self) -> None:
-        config_defined: bool = self.yaml.get(Keys.GRAPHICS_CONFIG) or self.yaml.get(
-            Keys.KEYMAP_CONFIG
-        )
-        assert (
-            config_defined
-        ), "Codeless plugins must define at least the location of the graphics config or the keymap config."
+        graphics: bool = self.get(Keys.GRAPHICS_CONFIG)
+        keymap: bool = self.get(Keys.KEYMAP_CONFIG)
 
-    def verify(self, folder_path: str) -> bool:
-        paths = self.yaml.get(Keys.VERIFICATION_PATHS)
-        assert paths, (
-            "Verification paths have not been defined. These are required to check if the game exists at a "
-            "location. "
-        )
-
-        here = self.here()
-        return all([os.path.exists(os.path.join(here, p)) for p in paths])
+        error = "Codeless plugins must define at least the location of the graphics config or the keymap config."
+        assert graphics or keymap, error
 
     def get_executable(self) -> str:
         pass
