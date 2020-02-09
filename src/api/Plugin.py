@@ -16,6 +16,7 @@
 import inspect
 import logging
 import os
+import subprocess
 from abc import ABC, abstractmethod
 from os import path
 from typing import Dict, Optional, final
@@ -23,8 +24,8 @@ from typing import Dict, Optional, final
 import requests
 import yaml
 
-from api.Launcher import Launcher
 from api.Keys import Keys
+from api.Launcher import Launcher
 from api.Platform import Platform
 
 
@@ -149,9 +150,20 @@ class Plugin(ABC):
         :return: whether the game was launched successfully
         """
         if launcher is Launcher.STEAM:
-            os.system(
-                f'C:"\\Program Files (x86)"\\Steam\\Steam.exe steam://rungameid/{self.get(Keys.STEAM_ID)}'
+            steam = "C:'/Program Files (x86)'/Steam/Steam.exe"
+
+            id = self.get(Keys.STEAM_ID)
+
+            # Important security check to guard against malicious injection.
+            assert id == int(str(int(id)))
+
+            uri = f"steam://rungameid/{id}"
+            subprocess.Popen(
+                ["powershell", "-c", steam, uri],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
             )
+
             return True
         elif launcher is Launcher.STANDALONE:
             return False

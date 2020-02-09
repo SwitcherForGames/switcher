@@ -18,6 +18,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPalette, QBrush, QColor
 from PyQt5.QtWidgets import QWidget, QGraphicsColorizeEffect
 
+from api.Launcher import Launcher
 from api.Plugin import Plugin
 from utils import resources
 
