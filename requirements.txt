@@ -3,3 +3,5 @@ PyYAML>=5.1.2
 PyQt5>=5.13.0
 aiohttp>=3.6.2
 PyGithub>=1.45
+qasync
+AsyncProcessScheduler
