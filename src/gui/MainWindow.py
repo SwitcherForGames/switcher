@@ -62,8 +62,7 @@ class MainWindow(MainGUI, QMainWindow):
             self, self.plugin_handler.get_installed_plugin_urls()
         )
 
-        if dialog.exec() == QDialog.Accepted:
-            changes = dialog.get_changes()
+        if dialog.exec() == QDialog.Accepted and (changes := dialog.get_changes()):
             self.plugin_handler.apply_changes(changes)
             self.application.restart()
 

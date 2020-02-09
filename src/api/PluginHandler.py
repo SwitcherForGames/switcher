@@ -26,6 +26,7 @@ import requests
 import yaml
 
 from api.CodelessPlugin import CodelessPlugin
+from api.Keys import Keys
 from src.api.Platform import Platform
 from src.api.Plugin import Plugin
 
@@ -109,7 +110,15 @@ class PluginHandler:
 
         zip.extractall(self.plugins_folder)
         print(f"Downloaded plugin to {target}")
-        return target
+
+        with open(join(self.plugins_folder, target, "plugin.yaml"), "r") as f:
+            data = yaml.safe_load(f)
+            dir_name = data[Keys.PLUGIN_DIRECTORY.value]
+
+        shutil.move(
+            join(self.plugins_folder, target), join(self.plugins_folder, dir_name)
+        )
+        return dir_name
 
     def uninstall_plugin(self, url: str) -> None:
         target = self.load_yaml()["urls"][url]

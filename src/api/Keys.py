@@ -27,13 +27,14 @@ class Keys(Enum):
     API_VERSION = "api"
     GAME = "game"
     FEATURES = "features"
+    PLUGIN_DIRECTORY = "pluginDirectory"
 
     # Optional.
     STEAM_ID = "steamID"
     GRAPHICS_CONFIG = "graphicsConfig"
     KEYMAP_CONFIG = "keymapConfig"
     VERIFICATION_PATHS = "verificationPaths"
-    DIRECTORY_NAME = "dirName"
+    GAME_DIRECTORY = "gameDirectory"
 
 
 class Features(Enum):
