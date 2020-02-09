@@ -28,7 +28,7 @@ from utils import errorhandling
 
 if __name__ == "__main__":
     # Initialise logging.
-    logging.basicConfig(filename="utils/switcher.log", level=logging.DEBUG)
+    logging.basicConfig(filename="switcher.log", level=logging.DEBUG)
 
     # Fix Ctrl-C behaviour with PyQt.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -36,9 +36,10 @@ if __name__ == "__main__":
     # Fix error handling with PyQt on Windows.
     errorhandling.init()
 
-    # Set the working directory to the 'src' directory for consistency.
+    # Set the working directory for consistency.
     location = Path(path.dirname(path.abspath(__file__))).parent
     os.chdir(location)
+    sys.path.append(os.getcwd())
 
     app = Application(sys.argv)
 

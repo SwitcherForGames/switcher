@@ -24,8 +24,8 @@ import requests
 import yaml
 
 from api.Launcher import Launcher
-from src.api.Keys import Keys
-from src.api.Platform import Platform
+from api.Keys import Keys
+from api.Platform import Platform
 
 
 class Plugin(ABC):

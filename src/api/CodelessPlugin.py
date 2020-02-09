@@ -13,10 +13,9 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-
+from api.Keys import Keys
 from api.Platform import Platform
-from src.api.Keys import Keys
-from src.api.Plugin import Plugin
+from api.Plugin import Plugin
 
 
 class CodelessPlugin(Plugin):

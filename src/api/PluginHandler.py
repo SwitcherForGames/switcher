@@ -27,8 +27,8 @@ import yaml
 
 from api.CodelessPlugin import CodelessPlugin
 from api.Keys import Keys
-from src.api.Platform import Platform
-from src.api.Plugin import Plugin
+from api.Platform import Platform
+from api.Plugin import Plugin
 
 
 class PluginHandler:

@@ -18,7 +18,7 @@ import time
 from PyQt5.QtWidgets import QApplication
 
 from gui.MainWindow import MainWindow
-from src.api.PluginHandler import PluginHandler
+from api.PluginHandler import PluginHandler
 
 
 class Application(QApplication):
