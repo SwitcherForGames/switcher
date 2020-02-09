@@ -50,7 +50,7 @@ class MainWindow(MainGUI, QMainWindow):
 
         self.left.setAlignment(Qt.AlignTop)
         for p in self.plugin_handler.plugins:
-            w = PluginWidget(p)
+            w = PluginWidget(p, self)
             self.left.insertWidget(0, w)
 
             self.plugin_widgets.append(w)

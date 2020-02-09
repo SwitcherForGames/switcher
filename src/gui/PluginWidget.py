@@ -18,7 +18,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPalette, QBrush, QColor
 from PyQt5.QtWidgets import QWidget, QGraphicsColorizeEffect
 
-from api.Launcher import Launcher
 from api.Plugin import Plugin
 from utils import resources
 
@@ -30,13 +29,20 @@ strength2 = 0.1
 
 
 class PluginWidget(QWidget):
-    def __init__(self, plugin: Plugin):
+    def __init__(self, plugin: Plugin, window):
         super(PluginWidget, self).__init__()
+
+        from gui.MainWindow import MainWindow
+
+        self.window: MainWindow = window
         self.plugin = plugin
+
         uic.loadUi(resources.get_plugin_item_layout(), self)
 
+        # Dimensions of header images.
         height = 215
         width = 460
+
         self.setFixedHeight(height)
         self.setFixedWidth(width)
         self.setContentsMargins(0, 0, 0, 0)

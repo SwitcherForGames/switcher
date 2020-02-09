@@ -116,13 +116,12 @@ class Plugin(ABC):
 
         :return: the absolute file path to the downloaded header image
         """
-        steam_id = self.get(Keys.STEAM_ID)
+        steam_id = int(self.get(Keys.STEAM_ID))
         if not steam_id:
             return None
 
         url = f"http://cdn.akamai.steamstatic.com/steam/apps/{steam_id}/header.jpg"
-        result = self._perform_download(url, "header")
-        return result
+        return self._perform_download(url, "header")
 
     def _perform_download(self, url: str, filename: str, ext: str = "jpg") -> str:
         logging.info(f"Downloading header image from {url} as {filename}")

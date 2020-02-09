@@ -40,3 +40,4 @@ class Keys(Enum):
 class Features(Enum):
     GRAPHICS = "graphics"
     KEYMAP = "keymap"
+    GAME_SAVES = "saves"

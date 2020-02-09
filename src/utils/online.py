@@ -31,9 +31,10 @@ from typing import Tuple, List
 from github import Github
 from github.PaginatedList import PaginatedList
 
-template = "Switcher plugin for "
 whitelist = {"SwitcherForGames": "Switcher For Games"}
+blacklist = []
 
+template = "Switcher plugin for "
 g = Github()
 
 
@@ -57,8 +58,14 @@ def find_online_plugins() -> Tuple[List, List]:
         if alias := whitelist.get(p.author):
             p.author = alias
 
-    trusted = [p for p in plugins if p.owner.login in whitelist]
-    untrusted = [p for p in plugins if p not in trusted]
+    trusted = [
+        p
+        for p in plugins
+        if p.owner.login in whitelist and p.owner.login not in blacklist
+    ]
+    untrusted = [
+        p for p in plugins if p not in trusted and p.owner.login not in blacklist
+    ]
 
     for _list in (trusted, untrusted):
         _list.sort(key=lambda f: f.game)
