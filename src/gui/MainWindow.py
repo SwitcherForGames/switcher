@@ -18,14 +18,13 @@ from typing import List
 
 from PyQt5 import uic, QtGui
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPalette, QBrush, QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QMainWindow, QWidget, QTableView
-from qasync import asyncSlot
-from scheduler.Scheduler import Scheduler
+from PyQt5.QtGui import QPixmap, QPalette, QBrush
+from PyQt5.QtWidgets import QMainWindow, QDialog
 
-from src.main import resources, online
-from src.main.gui.MainGUI import MainGUI
-from src.main.gui.PluginWidget import PluginWidget
+from gui.MainGUI import MainGUI
+from gui.ManagePluginsDialog import ManagePluginsDialog
+from gui.PluginWidget import PluginWidget
+from utils import resources
 
 
 class MainWindow(MainGUI, QMainWindow):
@@ -40,17 +39,17 @@ class MainWindow(MainGUI, QMainWindow):
         self.plugin_widgets: List[PluginWidget] = []
 
         self.application = application
-        self.handler = application.handler
+        self.plugin_handler = application.plugin_handler
 
-        self.handler.initialise()
+        self.plugin_handler.initialise()
         self.setup_ui()
 
     def setup_ui(self) -> None:
         uic.loadUi(resources.get_layout(), self)
-        self.btn_plugins.clicked.connect(self.coro_get_plugins)
+        self.btn_plugins.clicked.connect(self.manage_plugins)
 
         self.left.setAlignment(Qt.AlignTop)
-        for p in self.handler.plugins:
+        for p in self.plugin_handler.plugins:
             w = PluginWidget(p)
             self.left.insertWidget(0, w)
 
@@ -58,58 +57,24 @@ class MainWindow(MainGUI, QMainWindow):
 
         self.resize_plugin_widgets()
 
-    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
-        backgrnd = QPixmap(
-            "E:\\Files\\Projects\\Pycharm\\profile-switcher\\plugins\\warthunder\\background.png"
+    def manage_plugins(self) -> None:
+        dialog = ManagePluginsDialog(
+            self, self.plugin_handler.get_installed_plugin_urls()
         )
+
+        if dialog.exec() == QDialog.Accepted:
+            changes = dialog.get_changes()
+            self.plugin_handler.apply_changes(changes)
+            self.application.restart()
+
+    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
+        backgrnd = QPixmap("plugins/warthunder/background.png")
         backgrnd = backgrnd.scaled(self.size(), Qt.KeepAspectRatioByExpanding)
         palette = QPalette()
         palette.setBrush(QPalette.Background, QBrush(backgrnd))
         # self.setPalette(palette)
 
         self.resize_plugin_widgets()
-
-    @asyncSlot()
-    async def coro_get_plugins(self):
-        self.scheduler = Scheduler()
-        self.scheduler.add(target=online.find_online_plugins)
-
-        right = QWidget(self)
-        uic.loadUi(resources.get_manage_plugins_layout(), right)
-        self.right.addWidget(right)
-
-        self.tbl1: QTableView = right.tbl_trusted
-        self.tbl2: QTableView = right.tbl_community
-        right.btn_apply.clicked.connect(self.on_apply_clicked)
-
-        model = QStandardItemModel()
-        model.itemChanged.connect(self.on_item_changed)
-        model.setHorizontalHeaderLabels(["Game", "Author", "Install"])
-        for t in (self.tbl1, self.tbl2):
-            t.verticalHeader().setVisible(False)
-            t.setModel(model)
-
-        trusted, community = (await self.scheduler.run())[0]
-
-        for p in trusted + community:
-            checkbox = QStandardItem(True)
-            checkbox.setCheckable(True)
-            checkbox.setCheckState(Qt.Checked)
-            checkbox.setText("Installed")
-            checkbox.checkState()
-
-            print(p.description)
-            model.appendRow([QStandardItem(p.game), QStandardItem(p.author), checkbox])
-
-        self.tbl1.resizeColumnsToContents()
-        self.tbl2.resizeColumnsToContents()
-
-    def on_apply_clicked(self):
-        pass
-
-    def on_item_changed(self, item):
-        # print(self.plugins.get(item))
-        pass
 
     def resize_plugin_widgets(self):
         window_height = self.height()

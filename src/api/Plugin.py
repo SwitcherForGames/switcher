@@ -22,7 +22,6 @@ from typing import Dict, Optional, final
 
 import requests
 import yaml
-from scheduler.Scheduler import Scheduler
 
 from api.Launcher import Launcher
 from src.api.Keys import Keys
@@ -116,15 +115,13 @@ class Plugin(ABC):
 
         :return: the absolute file path to the downloaded header image
         """
-        steam_id = self.yaml.get(Keys.STEAM_ID)
+        steam_id = self.get(Keys.STEAM_ID)
         if not steam_id:
             return None
 
         url = f"http://cdn.akamai.steamstatic.com/steam/apps/{steam_id}/header.jpg"
-        self.scheduler = Scheduler()
-        self.scheduler.add(target=self._perform_download, args=(url, "header"))
-        result = await self.scheduler.run()
-        return result[0]
+        result = self._perform_download(url, "header")
+        return result
 
     def _perform_download(self, url: str, filename: str, ext: str = "jpg") -> str:
         logging.info(f"Downloading header image from {url} as {filename}")

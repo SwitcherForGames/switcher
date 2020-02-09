@@ -34,8 +34,8 @@ class CodelessPlugin(Plugin):
         graphics: bool = self.get(Keys.GRAPHICS_CONFIG)
         keymap: bool = self.get(Keys.KEYMAP_CONFIG)
 
-        error = "Codeless plugins must define at least the location of the graphics config or the keymap config."
-        assert graphics or keymap, error
+        error_msg = "Codeless plugins must define at least the location of the graphics config or the keymap config."
+        assert graphics or keymap, error_msg
 
     def get_executable(self) -> str:
         pass

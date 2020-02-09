@@ -57,7 +57,7 @@ def find_online_plugins() -> Tuple[List, List]:
         if alias := whitelist.get(p.author):
             p.author = alias
 
-    trusted = [p for p in plugins if p.owner in whitelist]
+    trusted = [p for p in plugins if p.owner.login in whitelist]
     untrusted = [p for p in plugins if p not in trusted]
 
     for _list in (trusted, untrusted):

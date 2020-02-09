@@ -13,18 +13,26 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
+import time
 
 from PyQt5.QtWidgets import QApplication
 
+from gui.MainWindow import MainWindow
 from src.api.PluginHandler import PluginHandler
-from src.main.gui.MainWindow import MainWindow
 
 
 class Application(QApplication):
     def __init__(self, argv):
         super(Application, self).__init__(argv)
-        self.handler = PluginHandler()
+        self.plugin_handler = PluginHandler()
 
     def launch(self) -> None:
         self.window = MainWindow(self)
         self.window.show()
+
+    def restart(self):
+        self.plugin_handler = PluginHandler()
+        self.window.close()
+
+        time.sleep(0.5)
+        self.launch()

@@ -16,8 +16,14 @@
 import importlib
 import logging
 import os
+import shutil
+import zipfile
+from io import BytesIO
 from os.path import join
-from typing import Optional, List
+from typing import Optional, List, Dict
+
+import requests
+import yaml
 
 from api.CodelessPlugin import CodelessPlugin
 from src.api.Platform import Platform
@@ -34,10 +40,18 @@ class PluginHandler:
     def __init__(self):
         self.plugins: List[Plugin] = []
 
+    def deinitialise(self) -> None:
+        self.plugins.clear()
+
     def initialise(self) -> None:
         self.import_plugins_folder()
 
         for folder in os.listdir(self.plugins_folder):
+            if not os.path.isdir(join(self.plugins_folder, folder)):
+                continue
+
+            plugin = None
+
             if "init.py" in os.listdir(join(self.plugins_folder, folder)):
                 module = self.import_plugin_module(folder)
                 if module:
@@ -72,3 +86,66 @@ class PluginHandler:
             return imported
         except Exception as e:
             print(e)
+
+    def apply_changes(self, changes: Dict[str, bool]) -> None:
+        install = [key for key, value in changes.items() if value]
+        uninstall = [key for key, value in changes.items() if not value]
+
+        for p in install:
+            target = self.install_plugin(p)
+            self.save_installed_plugin_url(p, target)
+
+        for p in uninstall:
+            self.uninstall_plugin(p)
+            self.save_uninstalled_plugin_url(p)
+
+    def install_plugin(self, url: str) -> str:
+        zipball = f"{url}/zipball/master"
+        print(f"Downloading plugin from {zipball}")
+
+        request = requests.get(zipball)
+        zip = zipfile.ZipFile(BytesIO(request.content))
+        target = zip.namelist()[0]
+
+        zip.extractall(self.plugins_folder)
+        print(f"Downloaded plugin to {target}")
+        return target
+
+    def uninstall_plugin(self, url: str) -> None:
+        target = self.load_yaml()["urls"][url]
+        shutil.rmtree(join(self.plugins_folder, target))
+        print(f"Removed plugin at {target}.")
+
+    def get_installed_plugin_urls(self) -> List[str]:
+        return self.load_yaml().get("urls") or []
+
+    def save_installed_plugin_url(self, url: str, dir: str):
+        data = self.load_yaml()
+
+        data["urls"][url] = dir
+        self.save_yaml(data)
+
+    def save_uninstalled_plugin_url(self, url: str):
+        data = self.load_yaml()
+
+        del data["urls"][url]
+        self.save_yaml(data)
+
+    def load_yaml(self) -> Dict:
+        yaml_path = self._yaml_path()
+        if "plugins.yaml" not in os.listdir(self.plugins_folder):
+            with open(yaml_path, "w") as f:
+                data = {"urls": {}}
+                yaml.safe_dump(data, f)
+
+        with open(yaml_path, "r") as f:
+            return yaml.safe_load(f)
+
+    def save_yaml(self, data: Dict) -> None:
+        with open(self._yaml_path(), "w") as f:
+            return yaml.safe_dump(data, f)
+
+    def _yaml_path(self) -> str:
+        folder = self.plugins_folder
+        yaml_file = join(folder, "plugins.yaml")
+        return yaml_file

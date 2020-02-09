@@ -18,8 +18,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPalette, QBrush, QColor
 from PyQt5.QtWidgets import QWidget, QGraphicsColorizeEffect
 
-from src.api.Plugin import Plugin
-from src.main import resources
+from api.Plugin import Plugin
+from utils import resources
 
 color1 = QColor(255, 255, 0)
 strength1 = 0.05
