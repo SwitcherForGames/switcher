@@ -13,15 +13,37 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-from enum import Enum
-from typing import Tuple
+
+import os
+from os.path import join
+
+from api.Platform import Platform
 
 
-class ProfileType(Enum):
-    GRAPHICS = "graphics"
-    KEYMAP = "keymap"
-    GAME_SAVES = "saves"
+def safe_path(path: str) -> str:
+    try:
+        os.mkdir(path)
+    except FileExistsError:
+        pass
+    return path
 
-    @staticmethod
-    def all() -> Tuple["ProfileType", ...]:
-        return ProfileType.GRAPHICS, ProfileType.KEYMAP, ProfileType.GAME_SAVES
+
+_platform = Platform.get()
+_username = os.environ.get("USERNAME") or os.environ.get("USER")
+
+if _platform is Platform.WINDOWS:
+    _safe_path = safe_path(f"C:\\Users\\{_username}\\AppData\\Roaming\\Switcher")
+else:
+    _safe_path = safe_path(r"~/.switcher")
+
+
+def plugins_path() -> str:
+    return safe_path(join(_safe_path, "plugins"))
+
+
+def profile_path() -> str:
+    return safe_path(join(_safe_path, "profiles"))
+
+
+def log_path() -> str:
+    return join(_safe_path, "switcher.log")

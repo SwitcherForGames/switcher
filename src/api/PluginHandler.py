@@ -13,10 +13,10 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-import importlib
 import logging
 import os
 import shutil
+import sys
 import zipfile
 from io import BytesIO
 from os.path import join
@@ -25,6 +25,7 @@ from typing import Optional, List, Dict
 import requests
 import yaml
 
+from api import files
 from api.CodelessPlugin import CodelessPlugin
 from api.Keys import Keys
 from api.Platform import Platform
@@ -36,7 +37,8 @@ class PluginHandler:
     Class which handles importing plugins.
     """
 
-    plugins_folder = "plugins"
+    plugins_folder: str = files.plugins_path()
+    sys.path.append(plugins_folder)
 
     def __init__(self):
         self.plugins: List[Plugin] = []
@@ -45,8 +47,6 @@ class PluginHandler:
         self.plugins.clear()
 
     def initialise(self) -> None:
-        self.import_plugins_folder()
-
         for folder in os.listdir(self.plugins_folder):
             if not os.path.isdir(join(self.plugins_folder, folder)):
                 continue
@@ -67,12 +67,6 @@ class PluginHandler:
             if plugin:
                 self.plugins.append(plugin)
 
-    def import_plugins_folder(self) -> None:
-        """
-        Imports the plguins folder. This must be done before importing any plugins in subfolders.
-        """
-        importlib.import_module(self.plugins_folder)
-
     def import_plugin_module(self, folder: str) -> Optional[Plugin]:
         """
         Imports a plugin as a module.
@@ -80,13 +74,22 @@ class PluginHandler:
         :param folder: the folder to import the plugin from
         :return: the name of the imported module
         """
-        module_name = f"{self.plugins_folder}.{folder}.init"
+        module_name = f"plugins.{folder}.init"
+        import importlib.util
+
         try:
-            imported = importlib.import_module(module_name, package=self.plugins_folder)
+            spec = importlib.util.spec_from_file_location(
+                module_name, join(self.plugins_folder, folder, "init.py")
+            )
+
+            imported = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(imported)
+
             logging.info(f"Imported plugin: {module_name}")
             return imported
         except Exception as e:
             print(e)
+            logging.error(e)
 
     def apply_changes(self, changes: Dict[str, bool]) -> None:
         install = [key for key, value in changes.items() if value]
@@ -113,7 +116,7 @@ class PluginHandler:
 
         with open(join(self.plugins_folder, target, "plugin.yaml"), "r") as f:
             data = yaml.safe_load(f)
-            dir_name = data[Keys.PLUGIN_DIRECTORY.value]
+            dir_name = data[Keys.PACKAGE_NAME.value]
 
         shutil.move(
             join(self.plugins_folder, target), join(self.plugins_folder, dir_name)

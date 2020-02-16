@@ -13,15 +13,12 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-from enum import Enum
-from typing import Tuple
 
 
-class ProfileType(Enum):
-    GRAPHICS = "graphics"
-    KEYMAP = "keymap"
-    GAME_SAVES = "saves"
+class Profile:
+    def __init__(self, name: str, uuid: str):
+        self.uuid = uuid
+        self.name = name
 
-    @staticmethod
-    def all() -> Tuple["ProfileType", ...]:
-        return ProfileType.GRAPHICS, ProfileType.KEYMAP, ProfileType.GAME_SAVES
+    def rename(self, new_name: str) -> None:
+        self.name = new_name

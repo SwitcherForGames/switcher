@@ -15,6 +15,8 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 from enum import Enum
 
+from api.ProfileType import ProfileType
+
 
 class Keys(Enum):
     """
@@ -27,7 +29,7 @@ class Keys(Enum):
     API_VERSION = "api"
     GAME = "game"
     FEATURES = "features"
-    PLUGIN_DIRECTORY = "pluginDirectory"
+    PACKAGE_NAME = "packageName"
 
     # Optional.
     STEAM_ID = "steamID"
@@ -35,9 +37,7 @@ class Keys(Enum):
     KEYMAP_CONFIG = "keymapConfig"
     VERIFICATION_PATHS = "verificationPaths"
     GAME_DIRECTORY = "gameDirectory"
+    SAVES_FOLDER = "gameSavesFolder"
 
 
-class Features(Enum):
-    GRAPHICS = "graphics"
-    KEYMAP = "keymap"
-    GAME_SAVES = "saves"
+Features = ProfileType

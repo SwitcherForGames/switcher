@@ -13,7 +13,15 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-from PyQt5.QtWidgets import QVBoxLayout, QListWidget, QPushButton
+from PyQt5.QtWidgets import (
+    QVBoxLayout,
+    QListWidget,
+    QPushButton,
+    QGridLayout,
+    QTableWidget,
+    QLabel,
+    QCheckBox,
+)
 
 
 class MainGUI:
@@ -22,3 +30,16 @@ class MainGUI:
         self.right: QVBoxLayout = None
         self.listwidget_plugins: QListWidget = None
         self.btn_plugins: QPushButton = None
+
+        self.grid: QGridLayout = None
+        self.tbl_profiles: QTableWidget = None
+
+        self.btn_save_separate: QPushButton = None
+        self.btn_save_together: QPushButton = None
+
+        self.btn_browse: QPushButton = None
+        self.lbl_game_loc: QLabel = None
+
+        self.chk_game_saves: QCheckBox = None
+        self.chk_graphics: QCheckBox = None
+        self.chk_keymaps: QCheckBox = None

@@ -13,9 +13,15 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
+import os
+import shutil
+from os.path import join
+from typing import List
+
 from api.Keys import Keys
 from api.Platform import Platform
 from api.Plugin import Plugin
+from api.Profile import Profile
 
 
 class CodelessPlugin(Plugin):
@@ -32,12 +38,28 @@ class CodelessPlugin(Plugin):
     def initialise(self) -> None:
         graphics: bool = self.get(Keys.GRAPHICS_CONFIG)
         keymap: bool = self.get(Keys.KEYMAP_CONFIG)
+        saves: bool = self.get(Keys.SAVES_FOLDER)
 
-        error_msg = "Codeless plugins must define at least the location of the graphics config or the keymap config."
-        assert graphics or keymap, error_msg
+        error_msg = (
+            "Codeless plugins must define at least the location of the graphics config,"
+            " the keymap config or the game saves."
+        )
 
-    def get_executable(self) -> str:
+        assert graphics or keymap or saves, error_msg
+
+    def save_graphics_profile(self, abs_path: str) -> Profile:
+        game = self.game_path
+        graphics = self.get(Keys.GRAPHICS_CONFIG)
+
+        uuid = self.uuid()
+
+        _from = join(game, graphics)
+        _to = join(abs_path, uuid)
+
+        os.mkdir(_to)
+        shutil.copyfile(_from, _to)
+
+        return Profile("New profile", uuid)
+
+    def list_graphics_profiles(self, abs_path: str) -> List:
         pass
-
-    def save_profile(self, *types) -> None:
-        pass  # TODO: implement

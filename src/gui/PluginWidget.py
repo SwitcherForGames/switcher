@@ -16,7 +16,7 @@
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPalette, QBrush, QColor
-from PyQt5.QtWidgets import QWidget, QGraphicsColorizeEffect
+from PyQt5.QtWidgets import QWidget, QGraphicsColorizeEffect, QGraphicsDropShadowEffect
 
 from api.Plugin import Plugin
 from utils import resources
@@ -76,14 +76,20 @@ class PluginWidget(QWidget):
 
     def on_activation_changed(self):
         if self.active:
-            self.effect.setColor(color1)
-            self.effect.setStrength(strength1)
+            # self.effect.setColor(color1)
+            # self.effect.setStrength(strength1)
+            self.effect.setOffset(10)
         else:
-            self.effect.setColor(color2)
-            self.effect.setStrength(strength2)
+            # self.effect.setColor(color2)
+            # self.effect.setStrength(strength2)
+            self.effect.setOffset(4)
 
     def get_effect(self):
-        effect = QGraphicsColorizeEffect()
-        effect.setColor(color2)
-        effect.setStrength(strength2)
+        # effect = QGraphicsColorizeEffect()
+        # effect.setColor(color2)
+        # effect.setStrength(strength2)
+
+        effect = QGraphicsDropShadowEffect()
+        effect.setBlurRadius(20)
+        effect.setOffset(10)
         return effect

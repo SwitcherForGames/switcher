@@ -17,8 +17,6 @@ import asyncio
 from typing import List
 
 from PyQt5 import uic, QtGui
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import QMainWindow, QDialog
 
 from gui.MainGUI import MainGUI
@@ -48,14 +46,22 @@ class MainWindow(MainGUI, QMainWindow):
         uic.loadUi(resources.get_layout(), self)
         self.btn_plugins.clicked.connect(self.manage_plugins)
 
-        self.left.setAlignment(Qt.AlignTop)
-        for p in self.plugin_handler.plugins:
+        plugins = self.plugin_handler.plugins
+
+        cols = max(2, round(len(plugins) / 3))
+        row, col = 0, 0
+
+        for p in plugins:
+            if col == cols:
+                row += 1
+                col = 0
+
+            col += 1
             w = PluginWidget(p, self)
-            self.left.insertWidget(0, w)
+            self.grid.addWidget(w, row, col)
 
             self.plugin_widgets.append(w)
-
-        self.resize_plugin_widgets()
+            asyncio.ensure_future(w.coro_initialise())
 
     def manage_plugins(self) -> None:
         dialog = ManagePluginsDialog(
@@ -67,13 +73,17 @@ class MainWindow(MainGUI, QMainWindow):
             self.application.restart()
 
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
-        backgrnd = QPixmap("plugins/warthunder/background.png")
-        backgrnd = backgrnd.scaled(self.size(), Qt.KeepAspectRatioByExpanding)
-        palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(backgrnd))
+        # img = Image.open("background.png")
+        # img = img.filter(ImageFilter.GaussianBlur(radius=10))
+        # img.save("blur.png")
+
+        # backgrnd = QPixmap("blur.png")
+        # backgrnd = backgrnd.scaled(self.size(), Qt.KeepAspectRatioByExpanding)
+        # palette = QPalette()
+        # palette.setBrush(QPalette.Background, QBrush(backgrnd))
         # self.setPalette(palette)
 
-        self.resize_plugin_widgets()
+        pass
 
     def resize_plugin_widgets(self):
         window_height = self.height()

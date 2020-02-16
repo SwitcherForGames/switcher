@@ -17,9 +17,10 @@ import inspect
 import logging
 import os
 import subprocess
+import uuid
 from abc import ABC, abstractmethod
 from os import path
-from typing import Dict, Optional, final
+from typing import Dict, Optional, final, List
 
 import requests
 import yaml
@@ -39,9 +40,13 @@ class Plugin(ABC):
         self.platform = platform
         self.yaml = self.load_yaml()
         self.initialise()
+        self.game_path: str = None
 
     @abstractmethod
     def initialise(self) -> None:
+        """
+        Called every time the plugin is imported.
+        """
         pass
 
     def verify(self, folder_path: str) -> bool:
@@ -64,16 +69,30 @@ class Plugin(ABC):
         here = self.here()
         return all([os.path.exists(os.path.join(here, p)) for p in paths])
 
-    @abstractmethod
-    def save_profile(self, *types) -> None:
+    def save_graphics_profile(self, abs_path: str) -> None:
         """
-        Saves a profile for the current settings.
-
-        :param types: the types of profile to save; e.g. graphics and/or keymap profiles
+        Saves a graphics profile for the current settings.
         """
         pass
 
-    @abstractmethod
+    def save_keymap_profile(self, abs_path: str) -> None:
+        """
+        Saves a keymap profile for the current settings.
+        """
+        pass
+
+    def save_game_saves(self, abs_path: str) -> None:
+        pass
+
+    def list_graphics_profiles(self, abs_path: str) -> List:
+        pass
+
+    def list_keymap_profiles(self, abs_path: str) -> List:
+        pass
+
+    def list_game_saves(self, abs_path: str) -> List:
+        pass
+
     def get_executable(self) -> str:
         """
         :return: the path to the executable which launches the game
@@ -169,6 +188,9 @@ class Plugin(ABC):
 
         return False
 
+    def uuid(self) -> str:
+        return f"{uuid.uuid4()}"
+
     @final
     def here(self) -> str:
         """
@@ -179,6 +201,10 @@ class Plugin(ABC):
         """
         class_location = inspect.getfile(self.__class__)
         return path.abspath(path.dirname(class_location))
+
+    @final
+    def get_uid(self) -> str:
+        return self.yaml.get(Keys.UID)
 
     @final
     def get_name(self) -> str:

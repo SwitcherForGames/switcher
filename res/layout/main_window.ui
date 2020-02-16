@@ -16,12 +16,127 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="2,5">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="10,0,0,0,1">
+      <property name="spacing">
+       <number>25</number>
+      </property>
       <item>
-       <layout class="QVBoxLayout" name="left">
-        <property name="spacing">
+       <layout class="QGridLayout" name="grid">
+        <property name="topMargin">
+         <number>25</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
+        <property name="spacing">
+         <number>25</number>
+        </property>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QLabel" name="lbl_game_loc">
+          <property name="text">
+           <string>Unknown</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_browse">
+          <property name="text">
+           <string>Browse</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="box_profiles">
+        <property name="title">
+         <string>Profiles</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QTableWidget" name="tbl_profiles"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_apply_profile">
+           <property name="text">
+            <string>Apply profile</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QWidget" name="widget" native="true"/>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="box_save_profiles">
+          <property name="title">
+           <string>Save profiles from current settings</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QCheckBox" name="chk_graphics">
+               <property name="text">
+                <string>Graphics</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="chk_keymaps">
+               <property name="text">
+                <string>Keymap</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="chk_game_saves">
+               <property name="text">
+                <string>Game saves</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <widget class="QPushButton" name="btn_save_together">
+               <property name="text">
+                <string>Save as one profile</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btn_save_separate">
+               <property name="text">
+                <string>Save as separate profiles</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_2" native="true"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QWidget" name="widget_4" native="true"/>
+        </item>
         <item>
          <widget class="QPushButton" name="btn_plugins">
           <property name="text">
@@ -29,10 +144,10 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QWidget" name="widget_3" native="true"/>
+        </item>
        </layout>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="right"/>
       </item>
      </layout>
     </item>
