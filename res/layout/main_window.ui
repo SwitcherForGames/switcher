@@ -36,6 +36,9 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
+         <widget class="QWidget" name="widget_5" native="true"/>
+        </item>
+        <item>
          <widget class="QLabel" name="lbl_game_loc">
           <property name="text">
            <string>Unknown</string>
@@ -48,6 +51,9 @@
            <string>Browse</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_6" native="true"/>
         </item>
        </layout>
       </item>

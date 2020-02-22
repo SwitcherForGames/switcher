@@ -43,10 +43,11 @@ class PluginHandler:
     def __init__(self):
         self.plugins: List[Plugin] = []
 
-    def deinitialise(self) -> None:
-        self.plugins.clear()
-
     def initialise(self) -> None:
+        data = self.load_yaml()
+        if not data.get("gamePaths"):
+            data["gamePaths"] = {}
+
         for folder in os.listdir(self.plugins_folder):
             if not os.path.isdir(join(self.plugins_folder, folder)):
                 continue
@@ -66,6 +67,7 @@ class PluginHandler:
 
             if plugin:
                 self.plugins.append(plugin)
+                plugin.game_path = data.get("gamePaths").get(plugin.get_uid())
 
     def import_plugin_module(self, folder: str) -> Optional[Plugin]:
         """
@@ -141,6 +143,22 @@ class PluginHandler:
         data = self.load_yaml()
 
         del data["urls"][url]
+        self.save_yaml(data)
+
+    def save_game_path(self, path: str, plugin: Plugin) -> None:
+        """
+        Saves the path to the game associated with a plugin.
+
+        :param path: the absolute file path to the game's root folder
+        :param plugin: the plugin which handles the game
+        """
+        plugin.game_path = path
+
+        data = self.load_yaml()
+        if not data.get("gamePaths"):
+            data["gamePaths"] = {}
+
+        data["gamePaths"][plugin.get_uid()] = path
         self.save_yaml(data)
 
     def load_yaml(self) -> Dict:

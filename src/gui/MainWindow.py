@@ -17,8 +17,9 @@ import asyncio
 from typing import List
 
 from PyQt5 import uic, QtGui
-from PyQt5.QtWidgets import QMainWindow, QDialog
+from PyQt5.QtWidgets import QMainWindow, QDialog, QFileDialog
 
+from api.Plugin import Plugin
 from gui.MainGUI import MainGUI
 from gui.ManagePluginsDialog import ManagePluginsDialog
 from gui.PluginWidget import PluginWidget
@@ -46,6 +47,8 @@ class MainWindow(MainGUI, QMainWindow):
         uic.loadUi(resources.get_layout(), self)
         self.btn_plugins.clicked.connect(self.manage_plugins)
 
+        self.btn_browse.clicked.connect(self.browse_for_game)
+
         plugins = self.plugin_handler.plugins
 
         cols = max(2, round(len(plugins) / 3))
@@ -63,6 +66,8 @@ class MainWindow(MainGUI, QMainWindow):
             self.plugin_widgets.append(w)
             asyncio.ensure_future(w.coro_initialise())
 
+        self.plugin_widgets[0].toggle_activation()
+
     def manage_plugins(self) -> None:
         dialog = ManagePluginsDialog(
             self, self.plugin_handler.get_installed_plugin_urls()
@@ -71,6 +76,32 @@ class MainWindow(MainGUI, QMainWindow):
         if dialog.exec() == QDialog.Accepted and (changes := dialog.get_changes()):
             self.plugin_handler.apply_changes(changes)
             self.application.restart()
+
+    def on_plugin_activation_changed(self, plugin: Plugin) -> None:
+        for p in self.plugin_widgets:
+            if p.plugin is not plugin and p.active:
+                p.toggle_activation(trigger=False)
+
+        loc = plugin.game_path or "Game location unknown"
+        self.lbl_game_loc.setText(loc)
+
+    def browse_for_game(self) -> None:
+        loc = QFileDialog.getExistingDirectory(
+            self, "Open game folder", options=QFileDialog.ShowDirsOnly
+        )
+
+        p = self.get_active_plugin()
+
+        if p.verify(loc):
+            self.plugin_handler.save_game_path(loc, p)
+            self.lbl_game_loc.setText(loc)
+
+        return loc
+
+    def get_active_plugin(self) -> Plugin:
+        for w in self.plugin_widgets:
+            if w.active:
+                return w.plugin
 
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
         # img = Image.open("background.png")

@@ -16,7 +16,7 @@
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPalette, QBrush, QColor
-from PyQt5.QtWidgets import QWidget, QGraphicsColorizeEffect, QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import QWidget, QGraphicsDropShadowEffect
 
 from api.Plugin import Plugin
 from utils import resources
@@ -71,8 +71,18 @@ class PluginWidget(QWidget):
 
     def onclick(self, event):
         # self.indicator.setVisible(not self.indicator.isVisible())
+        self.toggle_activation(trigger=True)
+
+    def toggle_activation(self, trigger=True) -> None:
+        if trigger and self.active:
+            # This only happens when the plugin is active and the user clicks on it again.
+            return
+
         self.active = not self.active
         self.on_activation_changed()
+
+        if trigger:
+            self.window.on_plugin_activation_changed(self.plugin)
 
     def on_activation_changed(self):
         if self.active:

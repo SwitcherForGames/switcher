@@ -65,9 +65,7 @@ class Plugin(ABC):
             "Verification paths have not been defined. These are required to check if the game exists at a "
             "location. "
         )
-
-        here = self.here()
-        return all([os.path.exists(os.path.join(here, p)) for p in paths])
+        return all([os.path.exists(os.path.join(folder_path, p)) for p in paths])
 
     def save_graphics_profile(self, abs_path: str) -> None:
         """
@@ -194,7 +192,8 @@ class Plugin(ABC):
     @final
     def here(self) -> str:
         """
-        Returns the absolute path to the folder containing the current plugin class.
+        Returns the absolute path to the folder containing the current
+        plugin class (which should be a subclass of this class).
 
         NOTE: '__file__' cannot be used because it returns the path to the abstract Plugin class,
         not the desired plugin implementation.
@@ -204,15 +203,15 @@ class Plugin(ABC):
 
     @final
     def get_uid(self) -> str:
-        return self.yaml.get(Keys.UID)
+        return self.get(Keys.UID)
 
     @final
     def get_name(self) -> str:
-        return self.yaml.get(Keys.GAME)
+        return self.get(Keys.GAME)
 
     @final
     def get_api_level(self) -> int:
-        return self.yaml.get(Keys.API_VERSION)
+        return self.get(Keys.API_VERSION)
 
     @final
     def is_windows(self) -> bool:
