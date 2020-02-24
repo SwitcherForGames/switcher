@@ -43,3 +43,5 @@ class MainGUI:
         self.chk_game_saves: QCheckBox = None
         self.chk_graphics: QCheckBox = None
         self.chk_keymaps: QCheckBox = None
+
+        self.btn_play: QPushButton = None

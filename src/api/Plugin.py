@@ -20,7 +20,7 @@ import subprocess
 import uuid
 from abc import ABC, abstractmethod
 from os import path
-from typing import Dict, Optional, final, List
+from typing import Dict, Optional, final, List, Any
 
 import requests
 import yaml
@@ -28,6 +28,7 @@ import yaml
 from api.Keys import Keys
 from api.Launcher import Launcher
 from api.Platform import Platform
+from api.profiles import ProfileType, Profile
 
 
 class Plugin(ABC):
@@ -40,6 +41,7 @@ class Plugin(ABC):
         self.platform = platform
         self.yaml = self.load_yaml()
         self.initialise()
+
         self.game_path: str = None
 
     @abstractmethod
@@ -66,6 +68,15 @@ class Plugin(ABC):
             "location. "
         )
         return all([os.path.exists(os.path.join(folder_path, p)) for p in paths])
+
+    def save(self, profile: Profile, path: str) -> None:
+        """
+        Saves a profile for the current settings.
+
+        :param profile: the profile to save
+        :param path: the path to save the profile to
+        """
+        pass
 
     def save_graphics_profile(self, abs_path: str) -> None:
         """
@@ -149,7 +160,7 @@ class Plugin(ABC):
 
         return filepath
 
-    def get(self, key: Keys) -> Optional:
+    def get(self, key: Keys) -> Optional[Any]:
         """
         Gets the value of an item from the YAML file.
 
@@ -200,6 +211,16 @@ class Plugin(ABC):
         """
         class_location = inspect.getfile(self.__class__)
         return path.abspath(path.dirname(class_location))
+
+    @final
+    def get_features(self) -> List[ProfileType]:
+        features = self.get(Keys.FEATURES) or []
+        out = []
+
+        for f in features:
+            out.append(ProfileType.get(f))
+
+        return out
 
     @final
     def get_uid(self) -> str:

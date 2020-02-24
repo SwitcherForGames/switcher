@@ -21,7 +21,7 @@ from typing import List
 from api.Keys import Keys
 from api.Platform import Platform
 from api.Plugin import Plugin
-from api.Profile import Profile
+from api.profiles import Profile
 
 
 class CodelessPlugin(Plugin):

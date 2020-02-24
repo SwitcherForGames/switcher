@@ -16,10 +16,12 @@
 import asyncio
 from typing import List
 
-from PyQt5 import uic, QtGui
+from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QDialog, QFileDialog
 
+from api.Launcher import Launcher
 from api.Plugin import Plugin
+from api.profiles import ProfileType, Feature, SingleFeature, ComboFeature, Profile
 from gui.MainGUI import MainGUI
 from gui.ManagePluginsDialog import ManagePluginsDialog
 from gui.PluginWidget import PluginWidget
@@ -45,9 +47,14 @@ class MainWindow(MainGUI, QMainWindow):
 
     def setup_ui(self) -> None:
         uic.loadUi(resources.get_layout(), self)
-        self.btn_plugins.clicked.connect(self.manage_plugins)
 
+        self.btn_plugins.clicked.connect(self.manage_plugins)
         self.btn_browse.clicked.connect(self.browse_for_game)
+
+        self.btn_save_separate.clicked.connect(self.save_separate_profiles)
+        self.btn_save_together.clicked.connect(self.save_profile)
+
+        self.btn_play.clicked.connect(self.on_play_clicked)
 
         plugins = self.plugin_handler.plugins
 
@@ -85,6 +92,53 @@ class MainWindow(MainGUI, QMainWindow):
         loc = plugin.game_path or "Game location unknown"
         self.lbl_game_loc.setText(loc)
 
+        features = plugin.get_features()
+        self._setup_check_boxes(features)
+
+    def on_play_clicked(self) -> None:
+        self.get_active_plugin().launch_game(Launcher.STEAM)
+
+    def save_separate_profiles(self) -> None:
+        plugin = self.get_active_plugin()
+
+        feature = self.get_current_feature()
+        profile = Profile.create(None, feature)
+
+        self.plugin_handler.save_profile(plugin, profile)
+
+    def save_profile(self) -> None:
+        plugin = self.get_active_plugin()
+
+    def _setup_check_boxes(self, features: List[ProfileType]) -> None:
+        for c in (self.chk_game_saves, self.chk_keymaps, self.chk_graphics):
+            c.setChecked(False)
+            c.setEnabled(False)
+
+        for f in features:
+            if f is ProfileType.GRAPHICS:
+                self.chk_graphics.setChecked(True)
+                self.chk_graphics.setEnabled(True)
+            elif f is ProfileType.KEYMAPS:
+                self.chk_keymaps.setChecked(True)
+                self.chk_keymaps.setEnabled(True)
+            elif f is ProfileType.GAME_SAVES:
+                self.chk_game_saves.setChecked(True)
+                self.chk_game_saves.setEnabled(True)
+
+    def get_current_feature(self) -> Feature:
+        graphics = not self.chk_graphics.isChecked() or ProfileType.GRAPHICS
+        keymaps = not self.chk_keymaps.isChecked() or ProfileType.KEYMAPS
+        saves = not self.chk_game_saves.isChecked() or ProfileType.GAME_SAVES
+
+        enabled: List = list(filter(lambda f: f, (graphics, keymaps, saves)))
+
+        if not enabled:
+            return None
+        elif len(enabled) == 1:
+            return SingleFeature(graphics or keymaps or saves)
+        else:
+            return ComboFeature(*enabled)
+
     def browse_for_game(self) -> None:
         loc = QFileDialog.getExistingDirectory(
             self, "Open game folder", options=QFileDialog.ShowDirsOnly
@@ -99,22 +153,12 @@ class MainWindow(MainGUI, QMainWindow):
         return loc
 
     def get_active_plugin(self) -> Plugin:
+        return self.get_active_plugin_widget().plugin
+
+    def get_active_plugin_widget(self) -> PluginWidget:
         for w in self.plugin_widgets:
             if w.active:
-                return w.plugin
-
-    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
-        # img = Image.open("background.png")
-        # img = img.filter(ImageFilter.GaussianBlur(radius=10))
-        # img.save("blur.png")
-
-        # backgrnd = QPixmap("blur.png")
-        # backgrnd = backgrnd.scaled(self.size(), Qt.KeepAspectRatioByExpanding)
-        # palette = QPalette()
-        # palette.setBrush(QPalette.Background, QBrush(backgrnd))
-        # self.setPalette(palette)
-
-        pass
+                return w
 
     def resize_plugin_widgets(self):
         window_height = self.height()

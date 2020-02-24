@@ -15,8 +15,6 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 from enum import Enum
 
-from api.ProfileType import ProfileType
-
 
 class Keys(Enum):
     """
@@ -38,6 +36,3 @@ class Keys(Enum):
     VERIFICATION_PATHS = "verificationPaths"
     GAME_DIRECTORY = "gameDirectory"
     SAVES_FOLDER = "gameSavesFolder"
-
-
-Features = ProfileType

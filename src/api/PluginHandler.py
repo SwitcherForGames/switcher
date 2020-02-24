@@ -30,6 +30,8 @@ from api.CodelessPlugin import CodelessPlugin
 from api.Keys import Keys
 from api.Platform import Platform
 from api.Plugin import Plugin
+from api.files import make_path
+from api.profiles import Profile
 
 
 class PluginHandler:
@@ -38,6 +40,7 @@ class PluginHandler:
     """
 
     plugins_folder: str = files.plugins_path()
+    profiles_folder: str = files.profile_path()
     sys.path.append(plugins_folder)
 
     def __init__(self):
@@ -160,6 +163,14 @@ class PluginHandler:
 
         data["gamePaths"][plugin.get_uid()] = path
         self.save_yaml(data)
+
+    def save_profile(self, plugin: Plugin, profile: Profile) -> None:
+        base_plugin_profile_dir = make_path(
+            join(self.profiles_folder, plugin.get_uid())
+        )
+        target_dir = make_path(join(base_plugin_profile_dir, profile.uuid))
+
+        plugin.save(profile, target_dir)
 
     def load_yaml(self) -> Dict:
         yaml_path = self._yaml_path()

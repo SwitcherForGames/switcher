@@ -20,7 +20,7 @@ from os.path import join
 from api.Platform import Platform
 
 
-def safe_path(path: str) -> str:
+def make_path(path: str) -> str:
     try:
         os.mkdir(path)
     except FileExistsError:
@@ -32,17 +32,17 @@ _platform = Platform.get()
 _username = os.environ.get("USERNAME") or os.environ.get("USER")
 
 if _platform is Platform.WINDOWS:
-    _safe_path = safe_path(f"C:\\Users\\{_username}\\AppData\\Roaming\\Switcher")
+    _safe_path = make_path(f"C:\\Users\\{_username}\\AppData\\Roaming\\Switcher")
 else:
-    _safe_path = safe_path(r"~/.switcher")
+    _safe_path = make_path(r"~/.switcher")
 
 
 def plugins_path() -> str:
-    return safe_path(join(_safe_path, "plugins"))
+    return make_path(join(_safe_path, "plugins"))
 
 
 def profile_path() -> str:
-    return safe_path(join(_safe_path, "profiles"))
+    return make_path(join(_safe_path, "profiles"))
 
 
 def log_path() -> str:
