@@ -18,10 +18,10 @@ from PyQt5.QtWidgets import (
     QListWidget,
     QPushButton,
     QGridLayout,
-    QTableWidget,
     QLabel,
     QCheckBox,
     QLineEdit,
+    QTableView,
 )
 
 
@@ -33,7 +33,7 @@ class MainGUI:
         self.btn_plugins: QPushButton = None
 
         self.grid: QGridLayout = None
-        self.tbl_profiles: QTableWidget = None
+        self.tbl_profiles: QTableView = None
 
         self.btn_save_profile: QPushButton = None
 

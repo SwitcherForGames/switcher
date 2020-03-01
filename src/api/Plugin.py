@@ -74,32 +74,14 @@ class Plugin(ABC):
         Saves a profile for the current settings.
 
         :param profile: the profile to save
-        :param path: the path to save the profile to
+        :param path: a unique path, belonging only to this particular profile, to which the profile will be saved
         """
         pass
 
-    def save_graphics_profile(self, abs_path: str) -> None:
+    def get_profiles(self, profile_dir: str) -> List[Profile]:
         """
-        Saves a graphics profile for the current settings.
+        Returns a list of the profiles which have been saved.
         """
-        pass
-
-    def save_keymap_profile(self, abs_path: str) -> None:
-        """
-        Saves a keymap profile for the current settings.
-        """
-        pass
-
-    def save_game_saves(self, abs_path: str) -> None:
-        pass
-
-    def list_graphics_profiles(self, abs_path: str) -> List:
-        pass
-
-    def list_keymap_profiles(self, abs_path: str) -> List:
-        pass
-
-    def list_game_saves(self, abs_path: str) -> List:
         pass
 
     def get_executable(self) -> str:

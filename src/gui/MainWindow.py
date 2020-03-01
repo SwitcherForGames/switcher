@@ -17,10 +17,12 @@ import asyncio
 from typing import List
 
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QDialog, QFileDialog
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import QMainWindow, QDialog, QFileDialog, QTableView
 
 from api.Launcher import Launcher
 from api.Plugin import Plugin
+from api.PluginHandler import PluginHandler
 from api.profiles import ProfileType, Feature, SingleFeature, ComboFeature, Profile
 from gui.MainGUI import MainGUI
 from gui.ManagePluginsDialog import ManagePluginsDialog
@@ -40,7 +42,7 @@ class MainWindow(MainGUI, QMainWindow):
         self.plugin_widgets: List[PluginWidget] = []
 
         self.application = application
-        self.plugin_handler = application.plugin_handler
+        self.plugin_handler: PluginHandler = application.plugin_handler
 
         self.plugin_handler.initialise()
         self.setup_ui()
@@ -93,6 +95,7 @@ class MainWindow(MainGUI, QMainWindow):
 
         features = plugin.get_features()
         self._setup_check_boxes(features)
+        self._update_profiles_table(plugin)
 
     def on_play_clicked(self) -> None:
         self.get_active_plugin().launch_game(Launcher.STEAM)
@@ -105,6 +108,20 @@ class MainWindow(MainGUI, QMainWindow):
 
         profile = Profile.create(name, feature)
         self.plugin_handler.save_profile(plugin, profile)
+
+    def _update_profiles_table(self, plugin: Plugin) -> None:
+        table: QTableView = self.tbl_profiles
+        self.model = QStandardItemModel()
+        table.setModel(self.model)
+
+        table.verticalHeader().setVisible(False)
+        self.model.setHorizontalHeaderLabels(["Name", "UUID"])
+
+        if profiles := self.plugin_handler.get_profiles(plugin):
+            for p in profiles:
+                self.model.appendRow([QStandardItem(p.name), QStandardItem(p.uuid)])
+
+        table.resizeColumnsToContents()
 
     def _setup_check_boxes(self, features: List[ProfileType]) -> None:
         for c in (self.chk_game_saves, self.chk_keymaps, self.chk_graphics):

@@ -22,7 +22,7 @@ from api.Platform import Platform
 
 def make_path(path: str) -> str:
     try:
-        os.mkdir(path)
+        os.makedirs(path)
     except FileExistsError:
         pass
     return path

@@ -172,6 +172,11 @@ class PluginHandler:
 
         plugin.save(profile, target_dir)
 
+    def get_profiles(self, plugin: Plugin) -> List[Profile]:
+        profile_dir = make_path(join(self.profiles_folder, plugin.get_uid()))
+
+        return plugin.get_profiles(profile_dir)
+
     def load_yaml(self) -> Dict:
         yaml_path = self._yaml_path()
         if "plugins.yaml" not in os.listdir(self.plugins_folder):

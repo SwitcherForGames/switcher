@@ -71,12 +71,19 @@ class CodelessPlugin(Plugin):
         _to = join(to_path, relative_path)
 
         try:
-            os.mkdir(os.path.split(_to)[0])
+            folder, _ = os.path.split(_to)
+            os.makedirs(folder)
         except FileExistsError:
             pass
 
         shutil.copyfile(_from, _to)
         print(f"Copied file {_from} to {_to}")
 
-    def list_graphics_profiles(self, abs_path: str) -> List:
-        pass
+    def get_profiles(self, profile_dir: str) -> List[Profile]:
+        profiles = []
+
+        for folder in os.listdir(profile_dir):
+            profile = Profile(uuid=folder)
+            profiles.append(profile)
+
+        return profiles

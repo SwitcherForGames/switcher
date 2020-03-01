@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="10,0,0,0,1">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="10,1,8,1,1">
       <property name="spacing">
        <number>25</number>
       </property>
@@ -74,7 +74,7 @@
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QTableWidget" name="tbl_profiles"/>
+          <widget class="QTableView" name="tbl_profiles"/>
          </item>
          <item>
           <widget class="QPushButton" name="btn_apply_profile">
