@@ -74,7 +74,7 @@ class Feature:
 class SingleFeature(Feature):
     def __init__(self, type: ProfileType):
         super().__init__()
-        self.type = type
+        self.types = type
 
 
 class ComboFeature(Feature):

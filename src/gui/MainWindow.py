@@ -51,8 +51,7 @@ class MainWindow(MainGUI, QMainWindow):
         self.btn_plugins.clicked.connect(self.manage_plugins)
         self.btn_browse.clicked.connect(self.browse_for_game)
 
-        self.btn_save_separate.clicked.connect(self.save_separate_profiles)
-        self.btn_save_together.clicked.connect(self.save_profile)
+        self.btn_save_profile.clicked.connect(self.save_profile)
 
         self.btn_play.clicked.connect(self.on_play_clicked)
 
@@ -98,16 +97,14 @@ class MainWindow(MainGUI, QMainWindow):
     def on_play_clicked(self) -> None:
         self.get_active_plugin().launch_game(Launcher.STEAM)
 
-    def save_separate_profiles(self) -> None:
+    def save_profile(self) -> None:
         plugin = self.get_active_plugin()
 
         feature = self.get_current_feature()
-        profile = Profile.create(None, feature)
+        name = self.edit_profile_name.text()
 
+        profile = Profile.create(name, feature)
         self.plugin_handler.save_profile(plugin, profile)
-
-    def save_profile(self) -> None:
-        plugin = self.get_active_plugin()
 
     def _setup_check_boxes(self, features: List[ProfileType]) -> None:
         for c in (self.chk_game_saves, self.chk_keymaps, self.chk_graphics):

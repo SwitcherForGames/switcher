@@ -16,12 +16,12 @@
 import os
 import shutil
 from os.path import join
-from typing import List
+from typing import List, Union, Iterable
 
 from api.Keys import Keys
 from api.Platform import Platform
 from api.Plugin import Plugin
-from api.profiles import Profile
+from api.profiles import Profile, ProfileType
 
 
 class CodelessPlugin(Plugin):
@@ -47,19 +47,36 @@ class CodelessPlugin(Plugin):
 
         assert graphics or keymap or saves, error_msg
 
-    def save_graphics_profile(self, abs_path: str) -> Profile:
+    def save(self, profile: Profile, path: str) -> None:
         game = self.game_path
-        graphics = self.get(Keys.GRAPHICS_CONFIG)
 
-        uuid = self.uuid()
+        profile_type: Union[ProfileType, Iterable[ProfileType]] = profile.feature.types
+        if profile_type is ProfileType:
+            profile_type = (profile_type,)
 
-        _from = join(game, graphics)
-        _to = join(abs_path, uuid)
+        for p in profile_type:
+            if p is ProfileType.GRAPHICS:
+                if graphics := self.get(Keys.GRAPHICS_CONFIG):
+                    self._copyfile(game, path, graphics)
 
-        os.mkdir(_to)
+            elif p is ProfileType.KEYMAPS:
+                if keymap := self.get(Keys.KEYMAP_CONFIG):
+                    self._copyfile(game, path, keymap)
+
+            elif p is ProfileType.GAME_SAVES:
+                raise NotImplementedError("Game saves are not implemented yet!")
+
+    def _copyfile(self, from_path: str, to_path: str, relative_path: str) -> None:
+        _from = join(from_path, relative_path)
+        _to = join(to_path, relative_path)
+
+        try:
+            os.mkdir(os.path.split(_to)[0])
+        except FileExistsError:
+            pass
+
         shutil.copyfile(_from, _to)
-
-        return Profile("New profile", uuid)
+        print(f"Copied file {_from} to {_to}")
 
     def list_graphics_profiles(self, abs_path: str) -> List:
         pass

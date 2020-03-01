@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
     QTableWidget,
     QLabel,
     QCheckBox,
+    QLineEdit,
 )
 
 
@@ -34,8 +35,7 @@ class MainGUI:
         self.grid: QGridLayout = None
         self.tbl_profiles: QTableWidget = None
 
-        self.btn_save_separate: QPushButton = None
-        self.btn_save_together: QPushButton = None
+        self.btn_save_profile: QPushButton = None
 
         self.btn_browse: QPushButton = None
         self.lbl_game_loc: QLabel = None
@@ -45,3 +45,5 @@ class MainGUI:
         self.chk_keymaps: QCheckBox = None
 
         self.btn_play: QPushButton = None
+
+        self.edit_profile_name: QLineEdit = None
