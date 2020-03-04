@@ -16,7 +16,7 @@
 import os
 import shutil
 from os.path import join
-from typing import List, Union, Iterable
+from typing import Union, Iterable
 
 from api.Keys import Keys
 from api.Platform import Platform
@@ -48,10 +48,11 @@ class CodelessPlugin(Plugin):
         assert graphics or keymap or saves, error_msg
 
     def save(self, profile: Profile, path: str) -> None:
+        self.save_profile_yaml(profile, path)
         game = self.game_path
 
         profile_type: Union[ProfileType, Iterable[ProfileType]] = profile.feature.types
-        if profile_type is ProfileType:
+        if isinstance(profile_type, ProfileType):
             profile_type = (profile_type,)
 
         for p in profile_type:
@@ -78,12 +79,3 @@ class CodelessPlugin(Plugin):
 
         shutil.copyfile(_from, _to)
         print(f"Copied file {_from} to {_to}")
-
-    def get_profiles(self, profile_dir: str) -> List[Profile]:
-        profiles = []
-
-        for folder in os.listdir(profile_dir):
-            profile = Profile(uuid=folder)
-            profiles.append(profile)
-
-        return profiles

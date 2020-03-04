@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import asyncio
-from typing import List
+from typing import List, Optional
 
 from PyQt5 import uic
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
@@ -109,17 +109,21 @@ class MainWindow(MainGUI, QMainWindow):
         profile = Profile.create(name, feature)
         self.plugin_handler.save_profile(plugin, profile)
 
+        self._update_profiles_table(plugin)
+
     def _update_profiles_table(self, plugin: Plugin) -> None:
         table: QTableView = self.tbl_profiles
         self.model = QStandardItemModel()
         table.setModel(self.model)
 
         table.verticalHeader().setVisible(False)
-        self.model.setHorizontalHeaderLabels(["Name", "UUID"])
+        self.model.setHorizontalHeaderLabels(["Name", "Features"])
 
         if profiles := self.plugin_handler.get_profiles(plugin):
             for p in profiles:
-                self.model.appendRow([QStandardItem(p.name), QStandardItem(p.uuid)])
+                name = p.name
+                features = ", ".join(p.feature.to_strings())
+                self.model.appendRow([QStandardItem(name), QStandardItem(features)])
 
         table.resizeColumnsToContents()
 
@@ -139,17 +143,19 @@ class MainWindow(MainGUI, QMainWindow):
                 self.chk_game_saves.setChecked(True)
                 self.chk_game_saves.setEnabled(True)
 
-    def get_current_feature(self) -> Feature:
+    def get_current_feature(self) -> Optional[Feature]:
         graphics = not self.chk_graphics.isChecked() or ProfileType.GRAPHICS
         keymaps = not self.chk_keymaps.isChecked() or ProfileType.KEYMAPS
         saves = not self.chk_game_saves.isChecked() or ProfileType.GAME_SAVES
 
-        enabled: List = list(filter(lambda f: f, (graphics, keymaps, saves)))
+        enabled: List = list(
+            filter(lambda f: isinstance(f, ProfileType), (graphics, keymaps, saves))
+        )
 
         if not enabled:
             return None
         elif len(enabled) == 1:
-            return SingleFeature(graphics or keymaps or saves)
+            return SingleFeature(enabled[0])
         else:
             return ComboFeature(*enabled)
 

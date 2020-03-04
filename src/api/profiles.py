@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 from enum import Enum
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 
 class ProfileType(Enum):
@@ -45,6 +45,21 @@ class Profile:
     def rename(self, new_name: str) -> None:
         self.name = new_name
 
+    def to_dict(self) -> Dict:
+        return {
+            "name": self.name,
+            "uuid": self.uuid,
+            "features": self.feature.to_strings(),
+        }
+
+    @staticmethod
+    def from_dict(dict: Dict) -> "Profile":
+        name = dict.get("name")
+        uuid = dict.get("uuid")
+        features = dict.get("features")
+
+        return Profile(name, uuid, Feature.from_strings(features))
+
     @staticmethod
     def create(name: str, feature: "Feature") -> "Profile":
         import uuid
@@ -60,15 +75,38 @@ class Profile:
 class Feature:
     @staticmethod
     def create(profile_types: List[ProfileType]):
+        strings = []
         for f in profile_types:
-            spl = [s.rstrip() for s in f.split(" ")]
+            spl = [s.rstrip() for s in f.value.split(" ")]
             assert spl, "Plugin defines no features."
 
-            if len(spl) == 1:
-                return SingleFeature(ProfileType.get(spl[0]))
-            else:
-                types = [ProfileType.get(v) for v in spl]
-                return ComboFeature(*types)
+            strings.append(spl[0])
+
+        if len(strings) == 1:
+            return SingleFeature(ProfileType.get(strings[0]))
+        else:
+            types = [ProfileType.get(v) for v in strings]
+            return ComboFeature(*types)
+
+    def to_strings(self) -> List[str]:
+        out = []
+
+        types = self.types
+        if not isinstance(types, tuple):
+            types = (types,)
+
+        for t in types:
+            out.append(t.value)
+
+        return out
+
+    @staticmethod
+    def from_strings(strings: List[str]) -> "Feature":
+        types = []
+        for s in strings:
+            types.append(ProfileType.get(s))
+
+        return Feature.create(types)
 
 
 class SingleFeature(Feature):

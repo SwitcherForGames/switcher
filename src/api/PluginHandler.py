@@ -189,7 +189,7 @@ class PluginHandler:
 
     def save_yaml(self, data: Dict) -> None:
         with open(self._yaml_path(), "w") as f:
-            return yaml.safe_dump(data, f)
+            yaml.safe_dump(data, f)
 
     def _yaml_path(self) -> str:
         folder = self.plugins_folder

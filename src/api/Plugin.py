@@ -76,13 +76,38 @@ class Plugin(ABC):
         :param profile: the profile to save
         :param path: a unique path, belonging only to this particular profile, to which the profile will be saved
         """
-        pass
+        self.save_profile_yaml(profile, path)
+
+    def save_profile_yaml(self, profile: Profile, path: str) -> None:
+        """
+        Saves the YAML file for a profile.
+        """
+        out = profile.to_dict()
+        with open(os.path.join(path, "profile.yaml"), "w") as f:
+            yaml.safe_dump(out, f)
+
+    def load_profile_yaml(self, path: str) -> Profile:
+        """
+        Loads the YAML file for a profile.
+        """
+        try:
+            with open(os.path.join(path, "profile.yaml"), "r") as f:
+                return Profile.from_dict(yaml.safe_load(f))
+        except (FileNotFoundError, AttributeError) as e:
+            _, tail = os.path.split(path)
+            return Profile(uuid=tail)
 
     def get_profiles(self, profile_dir: str) -> List[Profile]:
         """
         Returns a list of the profiles which have been saved.
         """
-        pass
+        profiles = []
+
+        for folder in os.listdir(profile_dir):
+            profile = self.load_profile_yaml(os.path.join(profile_dir, folder))
+            profiles.append(profile)
+
+        return profiles
 
     def get_executable(self) -> str:
         """
