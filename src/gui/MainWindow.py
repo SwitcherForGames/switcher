@@ -156,7 +156,8 @@ class MainWindow(MainGUI, QMainWindow):
                 self.chk_keymaps.setChecked(True)
                 self.chk_keymaps.setEnabled(True)
             elif f is ProfileType.GAME_SAVES:
-                self.chk_game_saves.setChecked(True)
+                # Game saves are usually not a priority; don't enable by default.
+                self.chk_game_saves.setChecked(False)
                 self.chk_game_saves.setEnabled(True)
 
     def get_current_feature(self) -> Optional[Feature]:
