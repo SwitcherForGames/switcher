@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1010</width>
-    <height>694</height>
+    <width>794</width>
+    <height>580</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,13 +16,19 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="10,1,8,1,1">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="10,1,5,1">
       <property name="spacing">
        <number>25</number>
       </property>
       <item>
        <layout class="QGridLayout" name="grid">
+        <property name="leftMargin">
+         <number>25</number>
+        </property>
         <property name="topMargin">
+         <number>25</number>
+        </property>
+        <property name="rightMargin">
          <number>25</number>
         </property>
         <property name="bottomMargin">
@@ -68,37 +74,44 @@
        </layout>
       </item>
       <item>
-       <widget class="QGroupBox" name="box_profiles">
-        <property name="title">
-         <string>Profiles</string>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QTableView" name="tbl_profiles"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_apply_profile">
-           <property name="text">
-            <string>Apply profile</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1,1">
+       <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="5,1">
         <item>
-         <widget class="QWidget" name="widget" native="true"/>
+         <widget class="QGroupBox" name="box_profiles">
+          <property name="title">
+           <string>View profiles</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QTableView" name="tbl_profiles">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>200</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_apply_profile">
+             <property name="text">
+              <string>Apply profile</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </item>
         <item>
          <widget class="QGroupBox" name="box_save_profiles">
           <property name="title">
-           <string>Save profiles from current settings</string>
+           <string>Save new profile</string>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_5">
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <property name="spacing">
+              <number>20</number>
+             </property>
              <item>
               <widget class="QCheckBox" name="chk_graphics">
                <property name="text">
@@ -149,9 +162,6 @@
           </layout>
          </widget>
         </item>
-        <item>
-         <widget class="QWidget" name="widget_2" native="true"/>
-        </item>
        </layout>
       </item>
       <item>
@@ -180,7 +190,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1010</width>
+     <width>794</width>
      <height>18</height>
     </rect>
    </property>

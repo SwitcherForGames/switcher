@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
+import time
 from enum import Enum
 from typing import List, Tuple, Dict
 
@@ -36,11 +37,18 @@ class ProfileType(Enum):
 
 
 class Profile:
-    def __init__(self, name: str = None, uuid: str = None, feature: "Feature" = None):
+    def __init__(
+        self,
+        name: str = None,
+        uuid: str = None,
+        feature: "Feature" = None,
+        _time: float = None,
+    ):
         self.uuid = uuid
         self.name = name
 
         self.feature = feature
+        self.time = _time or time.time()
 
     def rename(self, new_name: str) -> None:
         self.name = new_name
@@ -50,6 +58,7 @@ class Profile:
             "name": self.name,
             "uuid": self.uuid,
             "features": self.feature.to_strings(),
+            "time": self.time,
         }
 
     @staticmethod
@@ -57,8 +66,9 @@ class Profile:
         name = dict.get("name")
         uuid = dict.get("uuid")
         features = dict.get("features")
+        time = dict.get("time")
 
-        return Profile(name, uuid, Feature.from_strings(features))
+        return Profile(name, uuid, Feature.from_strings(features), time)
 
     @staticmethod
     def create(name: str, feature: "Feature") -> "Profile":
