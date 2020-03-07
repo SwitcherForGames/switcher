@@ -17,6 +17,7 @@ import os
 import shutil
 from enum import Enum
 from os.path import join
+from typing import Union, List
 
 from api.PathEvaluator import PathEvaluator
 from api.Platform import Platform
@@ -71,13 +72,16 @@ class FilePathParsingException(Exception):
     pass
 
 
-def evaluate_path(path: str) -> str:
+def evaluate_path(path: Union[str, List[str]]) -> Union[Union[List[str], str]]:
     """
     Interprets a file path, translating special variables to create the real path for the current system.
 
     :param path: the file path to interpret
     :return: the real path for the current system
     """
+    if isinstance(path, List):
+        return [evaluate_path(p) for p in path]
+
     if not path or tag not in path:
         return path
 
@@ -109,9 +113,37 @@ def evaluate_path(path: str) -> str:
 
 def sanitise_abs_path_for_profile(_path: str) -> str:
     if _platform is Platform.WINDOWS:
-        return _path.replace(":", "_")
+        return _path.replace(":", "")
     else:
         return f"root{_path}"
+
+
+def _copyfiles(
+    from_path: str,
+    to_path: str,
+    item_paths: Union[List[str], str],
+    creating_profile: bool,
+) -> None:
+    if not isinstance(item_paths, List):
+        item_paths = [
+            item_paths,
+        ]
+
+    # In some cases, the game may have different folder names depending on the version or system.
+    # We only want to raise an exception if *none* of the operations succeed.
+    exceptions = []
+    success = False
+
+    for p in item_paths:
+        try:
+            _copyfile(from_path, to_path, p, creating_profile)
+            success = True
+        except Exception as e:
+            exceptions.append(e)
+
+    if not success:
+        for e in exceptions:
+            raise e
 
 
 def _copyfile(
@@ -136,14 +168,21 @@ def _copyfile(
         _to = join(to_path, item_path)
 
     try:
-        folder, _ = os.path.split(_to)
+        if not os.path.isdir(_to):
+            folder, _ = os.path.split(_to)
+        else:
+            folder = _to
+
         os.makedirs(folder)
     except FileExistsError:
         pass
 
     if os.path.isdir(_from):
+        if os.path.exists(_to):
+            shutil.rmtree(_to)
+
         shutil.copytree(_from, _to)
     else:
         shutil.copyfile(_from, _to)
 
-    print(f"Copied file/folder {_from} to {_to}")
+    print(f"Copied '{_from}' to '{_to}'.")

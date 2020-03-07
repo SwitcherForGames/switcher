@@ -18,7 +18,7 @@ from typing import Tuple
 from api.Keys import Keys
 from api.Platform import Platform
 from api.Plugin import Plugin
-from api.files import _copyfile
+from api.files import _copyfiles
 from api.profiles import Profile, ProfileType
 
 
@@ -52,15 +52,15 @@ class CodelessPlugin(Plugin):
         for p in self._get_profile_types(profile):
             if p is ProfileType.GRAPHICS:
                 if graphics := self.get_path(Keys.GRAPHICS_CONFIG):
-                    _copyfile(game, path, graphics, creating_profile=True)
+                    _copyfiles(game, path, graphics, creating_profile=True)
 
             elif p is ProfileType.KEYMAPS:
                 if keymap := self.get_path(Keys.KEYMAP_CONFIG):
-                    _copyfile(game, path, keymap, creating_profile=True)
+                    _copyfiles(game, path, keymap, creating_profile=True)
 
             elif p is ProfileType.GAME_SAVES:
                 if saves := self.get_path(Keys.SAVES_FOLDER):
-                    _copyfile(game, path, saves, creating_profile=True)
+                    _copyfiles(game, path, saves, creating_profile=True)
 
     def apply(self, profile: Profile, path: str) -> None:
         game = self.game_path
@@ -68,15 +68,15 @@ class CodelessPlugin(Plugin):
         for p in self._get_profile_types(profile):
             if p is ProfileType.GRAPHICS:
                 if graphics := self.get_path(Keys.GRAPHICS_CONFIG):
-                    _copyfile(path, game, graphics, creating_profile=False)
+                    _copyfiles(path, game, graphics, creating_profile=False)
 
             elif p is ProfileType.KEYMAPS:
                 if keymap := self.get_path(Keys.KEYMAP_CONFIG):
-                    _copyfile(path, game, keymap, creating_profile=False)
+                    _copyfiles(path, game, keymap, creating_profile=False)
 
             elif p is ProfileType.GAME_SAVES:
                 if saves := self.get_path(Keys.SAVES_FOLDER):
-                    _copyfile(game, path, saves, creating_profile=False)
+                    _copyfiles(path, game, saves, creating_profile=False)
 
     def _get_profile_types(self, profile: Profile) -> Tuple[ProfileType]:
         profile_type = profile.feature.types
