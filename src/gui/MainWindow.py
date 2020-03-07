@@ -17,8 +17,13 @@ import asyncio
 from typing import List, Optional
 
 from PyQt5 import uic
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QMainWindow, QDialog, QFileDialog, QTableView
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QDialog,
+    QFileDialog,
+    QListWidget,
+    QListWidgetItem,
+)
 
 from api.Launcher import Launcher
 from api.Plugin import Plugin
@@ -27,6 +32,7 @@ from api.profiles import ProfileType, Feature, SingleFeature, ComboFeature, Prof
 from gui.MainGUI import MainGUI
 from gui.ManagePluginsDialog import ManagePluginsDialog
 from gui.PluginWidget import PluginWidget
+from gui.ProfileWidget import ProfileWidget
 from utils import resources
 
 
@@ -95,7 +101,7 @@ class MainWindow(MainGUI, QMainWindow):
 
         features = plugin.get_features()
         self._setup_check_boxes(features)
-        self._update_profiles_table(plugin)
+        self._update_profiles_list(plugin)
 
     def on_play_clicked(self) -> None:
         self.get_active_plugin().launch_game(Launcher.STEAM)
@@ -109,23 +115,33 @@ class MainWindow(MainGUI, QMainWindow):
         profile = Profile.create(name, feature)
         self.plugin_handler.save_profile(plugin, profile)
 
-        self._update_profiles_table(plugin)
+        self._update_profiles_list(plugin)
 
-    def _update_profiles_table(self, plugin: Plugin) -> None:
-        table: QTableView = self.tbl_profiles
-        self.model = QStandardItemModel()
-        table.setModel(self.model)
+    def apply_profile(self, profile: Profile) -> None:
+        plugin = self.get_active_plugin()
 
-        table.verticalHeader().setVisible(False)
-        self.model.setHorizontalHeaderLabels(["Name", "Features"])
+        self.plugin_handler.apply_profile(plugin, profile)
 
-        if profiles := self.plugin_handler.get_profiles(plugin):
+    def delete_profile(self, profile: Profile) -> None:
+        plugin = self.get_active_plugin()
+
+        self.plugin_handler.delete_profile(plugin, profile)
+        self._update_profiles_list(plugin)
+
+    def _update_profiles_list(self, plugin: Plugin) -> None:
+        list_widget: QListWidget = self.listwidget_profiles
+        list_widget.clear()
+
+        if profiles := sorted(
+            self.plugin_handler.get_profiles(plugin), key=lambda i: i.time, reverse=True
+        ):
             for p in profiles:
-                name = p.name
-                features = ", ".join(p.feature.to_strings())
-                self.model.appendRow([QStandardItem(name), QStandardItem(features)])
+                w = ProfileWidget(p, plugin, self.plugin_handler, self)
 
-        table.resizeColumnsToContents()
+                item = QListWidgetItem()
+                item.setSizeHint(w.sizeHint())
+                list_widget.addItem(item)
+                list_widget.setItemWidget(item, w)
 
     def _setup_check_boxes(self, features: List[ProfileType]) -> None:
         for c in (self.chk_game_saves, self.chk_keymaps, self.chk_graphics):

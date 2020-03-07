@@ -164,13 +164,24 @@ class PluginHandler:
         data["gamePaths"][plugin.get_uid()] = path
         self.save_yaml(data)
 
-    def save_profile(self, plugin: Plugin, profile: Profile) -> None:
+    def _get_profile_path(self, plugin: Plugin, profile: Profile) -> str:
         base_plugin_profile_dir = make_path(
             join(self.profiles_folder, plugin.get_uid())
         )
         target_dir = make_path(join(base_plugin_profile_dir, profile.uuid))
+        return target_dir
 
+    def save_profile(self, plugin: Plugin, profile: Profile) -> None:
+        target_dir = self._get_profile_path(plugin, profile)
         plugin.save(profile, target_dir)
+
+    def apply_profile(self, plugin: Plugin, profile: Profile) -> None:
+        target_dir = self._get_profile_path(plugin, profile)
+        plugin.apply(profile, target_dir)
+
+    def delete_profile(self, plugin: Plugin, profile: Profile) -> None:
+        target_dir = self._get_profile_path(plugin, profile)
+        plugin.delete(profile, target_dir)
 
     def get_profiles(self, plugin: Plugin) -> List[Profile]:
         profile_dir = make_path(join(self.profiles_folder, plugin.get_uid()))

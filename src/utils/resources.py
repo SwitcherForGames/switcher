@@ -23,5 +23,9 @@ def get_plugin_item_layout() -> str:
     return f"res/layout/plugin_item.ui"
 
 
+def get_profile_item_layout() -> str:
+    return f"res/layout/profile_item.ui"
+
+
 def get_manage_plugins_layout() -> str:
     return f"res/layout/manage_plugins.ui"

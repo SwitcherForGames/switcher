@@ -16,6 +16,7 @@
 import inspect
 import logging
 import os
+import shutil
 import subprocess
 import uuid
 from abc import ABC, abstractmethod
@@ -77,6 +78,25 @@ class Plugin(ABC):
         :param path: a unique path, belonging only to this particular profile, to which the profile will be saved
         """
         self.save_profile_yaml(profile, path)
+
+    def apply(self, profile: Profile, path: str) -> None:
+        """
+        Applies a profile. This will overwrite the current game settings with the settings from the profile.
+
+        :param profile: the profile to apply
+        :param path: the path to the profile
+        """
+        print(f"Applying profile '{profile.name}' from {path}...")
+
+    def delete(self, profile: Profile, path: str) -> None:
+        """
+        Deletes a profile.
+
+        :param profile: the profile to delete
+        :param path: the path to the profile
+        """
+        print(f"Deleting profile at {path}...")
+        shutil.rmtree(path)
 
     def save_profile_yaml(self, profile: Profile, path: str) -> None:
         """

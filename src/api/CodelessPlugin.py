@@ -16,7 +16,7 @@
 import os
 import shutil
 from os.path import join
-from typing import Union, Iterable
+from typing import Union, Iterable, Tuple
 
 from api.Keys import Keys
 from api.Platform import Platform
@@ -51,11 +51,7 @@ class CodelessPlugin(Plugin):
         self.save_profile_yaml(profile, path)
         game = self.game_path
 
-        profile_type: Union[ProfileType, Iterable[ProfileType]] = profile.feature.types
-        if isinstance(profile_type, ProfileType):
-            profile_type = (profile_type,)
-
-        for p in profile_type:
+        for p in self._get_profile_types(profile):
             if p is ProfileType.GRAPHICS:
                 if graphics := self.get(Keys.GRAPHICS_CONFIG):
                     self._copyfile(game, path, graphics)
@@ -66,6 +62,28 @@ class CodelessPlugin(Plugin):
 
             elif p is ProfileType.GAME_SAVES:
                 raise NotImplementedError("Game saves are not implemented yet!")
+
+    def apply(self, profile: Profile, path: str) -> None:
+        game = self.game_path
+
+        for p in self._get_profile_types(profile):
+            if p is ProfileType.GRAPHICS:
+                if graphics := self.get(Keys.GRAPHICS_CONFIG):
+                    self._copyfile(path, game, graphics)
+
+            elif p is ProfileType.KEYMAPS:
+                if keymap := self.get(Keys.KEYMAP_CONFIG):
+                    self._copyfile(game, path, keymap)
+
+            elif p is ProfileType.GAME_SAVES:
+                raise NotImplementedError("Game saves are not implemented yet!")
+
+    def _get_profile_types(self, profile: Profile) -> Tuple[ProfileType]:
+        profile_type: Union[ProfileType, Iterable[ProfileType]] = profile.feature.types
+        if isinstance(profile_type, ProfileType):
+            profile_type = (profile_type,)
+
+        return profile_type
 
     def _copyfile(self, from_path: str, to_path: str, relative_path: str) -> None:
         _from = join(from_path, relative_path)
