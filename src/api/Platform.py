@@ -30,5 +30,11 @@ class Platform(Enum):
             return Platform.WINDOWS
         elif system == "Linux":
             return Platform.LINUX
-        else:
+        elif system == "Darwin":
             return Platform.MAC_OS
+        else:
+            raise PlatformException(f"Platform with {system=} is not supported!")
+
+
+class PlatformException(Exception):
+    pass

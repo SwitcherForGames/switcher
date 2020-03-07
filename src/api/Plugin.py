@@ -26,6 +26,7 @@ from typing import Dict, Optional, final, List, Any
 import requests
 import yaml
 
+from api import files
 from api.Keys import Keys
 from api.Launcher import Launcher
 from api.Platform import Platform
@@ -195,6 +196,15 @@ class Plugin(ABC):
         :return: the value if it exists, or None if it does not exist
         """
         return self.yaml.get(key.value)
+
+    def get_path(self, key: Keys) -> Optional[Any]:
+        """
+        Gets the value of a path from the YAML file. This evaluates any variables in the path.
+
+        :param key: the key for an item, as a Keys enum
+        :return: the path, after evaluating it to replace any variables
+        """
+        return files.evaluate_path(self.get(key))
 
     def launch_game(self, launcher: Launcher) -> bool:
         """

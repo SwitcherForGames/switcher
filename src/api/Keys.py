@@ -33,6 +33,6 @@ class Keys(Enum):
     STEAM_ID = "steamID"
     GRAPHICS_CONFIG = "graphicsConfig"
     KEYMAP_CONFIG = "keymapConfig"
+    SAVES_FOLDER = "savesFolder"
     VERIFICATION_PATHS = "verificationPaths"
     GAME_DIRECTORY = "gameDirectory"
-    SAVES_FOLDER = "gameSavesFolder"
