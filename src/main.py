@@ -38,7 +38,7 @@ if __name__ == "__main__":
     multiprocessing.freeze_support()
 
     # Initialise logging.
-    logging.basicConfig(filename="switcher.log", level=logging.DEBUG)
+    logging.basicConfig(filename=files.log_path(), level=logging.DEBUG)
 
     # Fix Ctrl-C behaviour with PyQt.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
