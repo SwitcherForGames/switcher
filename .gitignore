@@ -1,5 +1,7 @@
 # Manually added
 plugins
+Output
+
 **.log
 .idea/misc.xml
 .idea/profile-switcher.iml
