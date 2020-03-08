@@ -15,6 +15,7 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import asyncio
 import logging
+import multiprocessing
 import os
 import signal
 import sys
@@ -27,6 +28,9 @@ from gui.Application import Application
 from utils import errorhandling
 
 if __name__ == "__main__":
+    # Fix issues when packaged with PyInstaller.
+    multiprocessing.freeze_support()
+
     # Initialise logging.
     logging.basicConfig(filename="switcher.log", level=logging.DEBUG)
 
@@ -37,7 +41,13 @@ if __name__ == "__main__":
     errorhandling.init()
 
     # Set the working directory for consistency.
-    location = Path(path.dirname(path.abspath(__file__))).parent
+    if getattr(sys, "frozen", False):
+        # When packaged using PyInstaller.
+        location = os.path.abspath(sys._MEIPASS)
+    else:
+        # When running as a normal Python program.
+        location = Path(path.abspath(path.dirname(__file__))).parent
+
     os.chdir(location)
     sys.path.append(os.getcwd())
 
