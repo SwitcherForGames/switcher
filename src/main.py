@@ -24,6 +24,12 @@ from pathlib import Path
 
 from qasync import QEventLoop
 
+from api import files
+
+# Whether running in development mode.
+dev = not getattr(sys, "frozen", False)
+files.init(dev)
+
 from gui.Application import Application
 from utils import errorhandling
 
@@ -41,7 +47,7 @@ if __name__ == "__main__":
     errorhandling.init()
 
     # Set the working directory for consistency.
-    if getattr(sys, "frozen", False):
+    if not dev:
         # When packaged using PyInstaller.
         location = os.path.abspath(sys._MEIPASS)
     else:

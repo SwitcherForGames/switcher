@@ -22,6 +22,24 @@ from typing import Union, List
 from api.PathEvaluator import PathEvaluator
 from api.Platform import Platform
 
+_safe_path = None
+
+
+def init(dev: bool) -> None:
+    global _safe_path
+
+    if dev:
+        _switcher_folder = "SwitcherDev"
+    else:
+        _switcher_folder = "Switcher"
+
+    if _platform is Platform.WINDOWS:
+        _safe_path = make_path(
+            f"C:\\Users\\{_username}\\AppData\\Roaming\\{_switcher_folder}"
+        )
+    else:
+        _safe_path = make_path(f"~/.{_switcher_folder.lower()}")
+
 
 def make_path(path: str) -> str:
     try:
@@ -34,11 +52,6 @@ def make_path(path: str) -> str:
 _platform = Platform.get()
 _evaluator = PathEvaluator.create(_platform)
 _username = _evaluator.username()
-
-if _platform is Platform.WINDOWS:
-    _safe_path = make_path(f"C:\\Users\\{_username}\\AppData\\Roaming\\Switcher")
-else:
-    _safe_path = make_path(r"~/.switcher")
 
 
 def plugins_path() -> str:

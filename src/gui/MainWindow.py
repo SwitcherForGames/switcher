@@ -80,7 +80,8 @@ class MainWindow(MainGUI, QMainWindow):
             self.plugin_widgets.append(w)
             asyncio.ensure_future(w.coro_initialise())
 
-        self.plugin_widgets[0].toggle_activation()
+        if self.plugin_widgets:
+            self.plugin_widgets[0].toggle_activation()
 
     def manage_plugins(self) -> None:
         dialog = ManagePluginsDialog(
