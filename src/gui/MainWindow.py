@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import asyncio
+import logging
 from typing import List, Optional
 
 from PyQt5 import uic
@@ -23,16 +24,20 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QListWidget,
     QListWidgetItem,
+    QLabel,
 )
+from github.GitRelease import GitRelease
 
 from api.Launcher import Launcher
 from api.Plugin import Plugin
 from api.PluginHandler import PluginHandler
 from api.profiles import ProfileType, Feature, SingleFeature, ComboFeature, Profile
 from gui.MainGUI import MainGUI
-from gui.ManagePluginsDialog import ManagePluginsDialog
-from gui.PluginWidget import PluginWidget
-from gui.ProfileWidget import ProfileWidget
+from gui.dialogs.ManagePluginsDialog import ManagePluginsDialog
+from gui.dialogs.UpdateDialog import UpdateDialog
+from gui.widgets.PluginWidget import PluginWidget
+from gui.widgets.ProfileWidget import ProfileWidget
+from updates.UpdateHandler import UpdateHandler, UpdateStatus
 from utils import resources
 
 
@@ -41,17 +46,22 @@ class MainWindow(MainGUI, QMainWindow):
     The main window of the application.
     """
 
-    def __init__(self, application):
+    def __init__(self, application, *args):
         MainGUI.__init__(self)
-        QMainWindow.__init__(self)
+        QMainWindow.__init__(self, *args)
 
         self.plugin_widgets: List[PluginWidget] = []
 
         self.application = application
         self.plugin_handler: PluginHandler = application.plugin_handler
 
+        self.update_handler: UpdateHandler = UpdateHandler()
+        self.update_status = UpdateStatus.UNKNOWN
+
         self.plugin_handler.initialise()
         self.setup_ui()
+
+        asyncio.ensure_future(self.check_for_updates())
 
     def setup_ui(self) -> None:
         uic.loadUi(resources.get_layout(), self)
@@ -62,6 +72,13 @@ class MainWindow(MainGUI, QMainWindow):
         self.btn_save_profile.clicked.connect(self.save_profile)
 
         self.btn_play.clicked.connect(self.on_play_clicked)
+
+        self.lbl_update = QLabel()
+        self.lbl_update.mousePressEvent = self.on_update_lbl_clicked
+        self.lbl_update.setMargin(8)
+        self.statusBar().addPermanentWidget(self.lbl_update)
+
+        self.refresh_update_lbl()
 
         plugins = self.plugin_handler.plugins
 
@@ -82,6 +99,39 @@ class MainWindow(MainGUI, QMainWindow):
 
         if self.plugin_widgets:
             self.plugin_widgets[0].toggle_activation()
+
+    async def check_for_updates(self):
+        if self.update_handler.should_check_for_updates():
+            new_release: GitRelease = await self.update_handler.get_latest_version()
+
+            if new_release.tag_name > self.update_handler.get_current_version():
+                new_tag = new_release.tag_name
+                logging.info(f"New version available: {new_tag}")
+                self.update_status = UpdateStatus.UPDATE_AVAILABLE
+                self.refresh_update_lbl(version=new_tag)
+            else:
+                self.update_status = UpdateStatus.NO_UPDATES_AVAILABLE
+                self.refresh_update_lbl()
+
+    def refresh_update_lbl(self, version=None):
+        if version:
+            text = f"Click to update to {version}"
+        else:
+            text = self.update_status.value
+
+        if self.update_status is not UpdateStatus.NO_UPDATES_AVAILABLE:
+            self.lbl_update.setStyleSheet("text-decoration: underline; color: blue")
+        else:
+            self.lbl_update.setStyleSheet("color: black")
+
+        self.lbl_update.setText(text)
+
+    def on_update_lbl_clicked(self, event):
+        if self.update_status is UpdateStatus.UPDATE_AVAILABLE:
+            self.start_update()
+
+    def start_update(self) -> None:
+        UpdateDialog().exec()
 
     def manage_plugins(self) -> None:
         dialog = ManagePluginsDialog(

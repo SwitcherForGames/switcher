@@ -29,6 +29,7 @@
 from typing import Tuple, List
 
 from github import Github
+from github.GitRelease import GitRelease
 from github.PaginatedList import PaginatedList
 
 whitelist = {"SwitcherForGames": "Switcher For Games"}
@@ -76,3 +77,10 @@ def find_online_plugins() -> Tuple[List, List]:
 def search_plugins() -> PaginatedList:
     repos = g.search_repositories(query="topic:switcher-plugin")
     return repos
+
+
+def get_switcher_releases() -> List[GitRelease]:
+    repo = g.get_repo("SwitcherForGames/switcher")
+    releases = repo.get_releases()
+
+    return sorted(releases, key=lambda r: r.tag_name)

@@ -15,21 +15,15 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
-def get_layout() -> str:
-    return f"res/layout/main_window.ui"
+import hashlib
 
 
-def get_plugin_item_layout() -> str:
-    return f"res/layout/plugin_item.ui"
+def sha256sum(filepath: str) -> str:
+    sha256 = hashlib.sha256()
+    bs = 4096
 
+    with open(filepath, "rb") as f:
+        for block in iter(lambda: f.read(bs), b""):
+            sha256.update(block)
 
-def get_profile_item_layout() -> str:
-    return f"res/layout/profile_item.ui"
-
-
-def get_manage_plugins_layout() -> str:
-    return f"res/layout/manage_plugins.ui"
-
-
-def get_update_dialog_layout() -> str:
-    return f"res/layout/update_dialog.ui"
+    return sha256.hexdigest()

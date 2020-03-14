@@ -62,6 +62,10 @@ def profile_path() -> str:
     return make_path(join(_safe_path, "profiles"))
 
 
+def installer_path() -> str:
+    return make_path(join(_safe_path, "installers"))
+
+
 def log_path() -> str:
     return join(_safe_path, "switcher.log")
 
