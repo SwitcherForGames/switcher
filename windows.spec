@@ -6,7 +6,11 @@ block_cipher = None
 a = Analysis(['src\\main.py'],
              pathex=['C:\\switcher'],
              binaries=[],
-             datas=[('res', 'res')],
+             datas=[
+                 ('res', 'res'),
+                 ('manifest.yaml', '.'),
+                 ('LICENSE', '.'),
+             ],
              hiddenimports=["qasync"],
              hookspath=[],
              runtime_hooks=[],
