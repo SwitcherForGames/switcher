@@ -46,3 +46,4 @@ class MainGUI:
         self.btn_play: QPushButton = None
 
         self.edit_profile_name: QLineEdit = None
+        self.lbl_update: QLabel = None

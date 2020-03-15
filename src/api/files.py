@@ -22,11 +22,13 @@ from typing import Union, List
 from api.PathEvaluator import PathEvaluator
 from api.Platform import Platform
 
-_safe_path = None
+_switcher_directory = None
+_settings = None
 
 
 def init(dev: bool) -> None:
-    global _safe_path
+    global _switcher_directory
+    global _settings
 
     if dev:
         _switcher_folder = "SwitcherDev"
@@ -34,18 +36,19 @@ def init(dev: bool) -> None:
         _switcher_folder = "Switcher"
 
     if _platform is Platform.WINDOWS:
-        _safe_path = make_path(
+        _switcher_directory = make_path(
             f"C:\\Users\\{_username}\\AppData\\Roaming\\{_switcher_folder}"
         )
     else:
-        _safe_path = make_path(f"~/.{_switcher_folder.lower()}")
+        _switcher_directory = make_path(f"~/.{_switcher_folder.lower()}")
+
+    from utils import settings
+
+    _settings = settings.get_instance()
 
 
 def make_path(path: str) -> str:
-    try:
-        os.makedirs(path)
-    except FileExistsError:
-        pass
+    os.makedirs(path, exist_ok=True)
     return path
 
 
@@ -55,19 +58,23 @@ _username = _evaluator.username()
 
 
 def plugins_path() -> str:
-    return make_path(join(_safe_path, "plugins"))
+    return make_path(join(_settings.switcher_directory, "plugins"))
 
 
 def profile_path() -> str:
-    return make_path(join(_safe_path, "profiles"))
+    return make_path(join(_settings.switcher_directory, "profiles"))
 
 
 def installer_path() -> str:
-    return make_path(join(_safe_path, "installers"))
+    return make_path(join(_settings.switcher_directory, "installers"))
 
 
 def log_path() -> str:
-    return join(_safe_path, "switcher.log")
+    return join(_switcher_directory, "switcher.log")
+
+
+def settings_path() -> str:
+    return join(_switcher_directory, "switcher.yaml")
 
 
 tag = "$!"  # Denotes part of a path as a variable.

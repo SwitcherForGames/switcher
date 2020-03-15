@@ -38,7 +38,7 @@ from gui.dialogs.UpdateDialog import UpdateDialog
 from gui.widgets.PluginWidget import PluginWidget
 from gui.widgets.ProfileWidget import ProfileWidget
 from updates.UpdateHandler import UpdateHandler, UpdateStatus
-from utils import resources
+from utils import resources, settings
 
 
 class MainWindow(MainGUI, QMainWindow):
@@ -49,6 +49,8 @@ class MainWindow(MainGUI, QMainWindow):
     def __init__(self, application, *args):
         MainGUI.__init__(self)
         QMainWindow.__init__(self, *args)
+
+        self.prefs = settings.get_instance()
 
         self.plugin_widgets: List[PluginWidget] = []
 
@@ -100,8 +102,11 @@ class MainWindow(MainGUI, QMainWindow):
         if self.plugin_widgets:
             self.plugin_widgets[0].toggle_activation()
 
-    async def check_for_updates(self):
-        if self.update_handler.should_check_for_updates():
+    async def check_for_updates(self, force=False):
+        if force or self.update_handler.should_check_for_updates():
+            self.update_status = UpdateStatus.CHECKING
+            self.refresh_update_lbl()
+
             new_release: GitRelease = await self.update_handler.get_latest_version()
 
             if new_release.tag_name > self.update_handler.get_current_version():
@@ -109,9 +114,20 @@ class MainWindow(MainGUI, QMainWindow):
                 logging.info(f"New version available: {new_tag}")
                 self.update_status = UpdateStatus.UPDATE_AVAILABLE
                 self.refresh_update_lbl(version=new_tag)
+
+                self.prefs.new_release_tag = new_tag
+                self.prefs.commit()
             else:
                 self.update_status = UpdateStatus.NO_UPDATES_AVAILABLE
                 self.refresh_update_lbl()
+
+        elif new_tag := self.prefs.new_release_tag:
+            if new_tag > self.update_handler.get_current_version():
+                self.update_status = UpdateStatus.UPDATE_AVAILABLE
+                self.refresh_update_lbl(version=new_tag)
+            else:
+                self.prefs.new_release_tag = None
+                self.prefs.commit()
 
     def refresh_update_lbl(self, version=None):
         if version:
@@ -129,6 +145,8 @@ class MainWindow(MainGUI, QMainWindow):
     def on_update_lbl_clicked(self, event):
         if self.update_status is UpdateStatus.UPDATE_AVAILABLE:
             self.start_update()
+        elif self.update_status is UpdateStatus.UNKNOWN:
+            asyncio.ensure_future(self.check_for_updates(True))
 
     def start_update(self) -> None:
         UpdateDialog().exec()

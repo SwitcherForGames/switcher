@@ -29,13 +29,14 @@ from scheduler.Scheduler import Scheduler
 from api import files
 from api.Platform import Platform
 from updates import checksum
-from utils import online
+from utils import online, settings
 
 
 class UpdateStatus(Enum):
     UNKNOWN = "Check for updates"
     UPDATE_AVAILABLE = "Install update"
     NO_UPDATES_AVAILABLE = "No updates available"
+    CHECKING = "Checking for updates..."
 
 
 def parse_checksum(text: str, filename: str) -> str:
@@ -129,14 +130,19 @@ class UpdateHandler:
         self.scheduler = None
         self.installer_folder = files.installer_path()
 
+        self.prefs = settings.get_instance()
+
     def should_check_for_updates(self) -> bool:
-        return True  # TODO: implement
+        return time.time() - self.prefs.last_update_check > 3600 * 6
 
     async def get_latest_version(self):
         self.scheduler = Scheduler()
         releases = await self.scheduler.map(
             target=online.get_switcher_releases, args=[()]
         )
+
+        self.prefs.last_update_check = time.time()
+        self.prefs.commit()
 
         return releases[0][0]
 
