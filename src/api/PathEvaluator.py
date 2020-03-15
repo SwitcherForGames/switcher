@@ -15,19 +15,27 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 
+import winshell
+
 from api.Platform import Platform
+
+
+def is_pathvar(var, pathvar) -> bool:
+    return var.value == pathvar.value
 
 
 class PathEvaluator:
     def evaluate(self, var: "PathVariable") -> str:
         from api.files import PathVariable
 
-        if self.is_pathvar(var, PathVariable.HOME):
+        if is_pathvar(var, PathVariable.HOME):
             return self.home()
-        elif self.is_pathvar(var, PathVariable.USERNAME):
+        elif is_pathvar(var, PathVariable.USERNAME):
             return self.username()
-        elif self.is_pathvar(var, PathVariable.DOCUMENTS):
+        elif is_pathvar(var, PathVariable.DOCUMENTS):
             return self.documents()
+        elif is_pathvar(var, PathVariable.DESKTOP):
+            return self.desktop()
 
     def home(self) -> str:
         return os.path.expanduser("~")
@@ -36,6 +44,9 @@ class PathEvaluator:
         return os.environ.get("USERNAME") or os.environ.get("USER")
 
     def documents(self) -> str:
+        raise NotImplementedError()
+
+    def desktop(self) -> str:
         raise NotImplementedError()
 
     @staticmethod
@@ -47,22 +58,13 @@ class PathEvaluator:
         elif platform is Platform.MAC_OS:
             return MacEvaluator()
 
-    def is_pathvar(self, var, pathvar) -> bool:
-        return var.value == pathvar.value
-
 
 class WindowsEvaluator(PathEvaluator):
     def documents(self) -> str:
-        import ctypes
-        from ctypes.wintypes import MAX_PATH
+        return winshell.my_documents()
 
-        dll = ctypes.windll.shell32
-        buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
-
-        if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
-            return buf.value
-
-        raise Exception("Could not get Documents folder.")
+    def desktop(self) -> str:
+        return winshell.desktop()
 
 
 class NixEvaluator(PathEvaluator):

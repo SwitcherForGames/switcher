@@ -81,6 +81,7 @@ tag = "$!"  # Denotes part of a path as a variable.
 
 
 class PathVariable(Enum):
+    DESKTOP = "DESKTOP"
     DOCUMENTS = "DOCUMENTS"
     USERNAME = "USERNAME"
     HOME = "HOME"
