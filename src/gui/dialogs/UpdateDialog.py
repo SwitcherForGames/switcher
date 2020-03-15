@@ -19,7 +19,8 @@ from PyQt5 import uic
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QDialog, QProgressBar, QLabel, QPushButton
 
-from updates.UpdateHandler import UpdateHandler, DownloadThread
+from updates.UpdateHandler import UpdateHandler
+from updates.DownloadThread import DownloadThread
 from utils import resources
 
 

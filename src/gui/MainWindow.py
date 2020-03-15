@@ -40,7 +40,8 @@ from gui.dialogs.ManagePluginsDialog import ManagePluginsDialog
 from gui.dialogs.UpdateDialog import UpdateDialog
 from gui.widgets.PluginWidget import PluginWidget
 from gui.widgets.ProfileWidget import ProfileWidget
-from updates.UpdateHandler import UpdateHandler, UpdateStatus
+from updates.UpdateHandler import UpdateHandler
+from updates.UpdateStatus import UpdateStatus
 from utils import resources, settings, errorhandling
 
 
@@ -124,6 +125,7 @@ class MainWindow(MainGUI, QMainWindow):
             else:
                 self.update_status = UpdateStatus.NO_UPDATES_AVAILABLE
                 self.refresh_update_lbl()
+                self.update_handler.cleanup()
 
         elif new_tag := self.prefs.new_release_tag:
             if new_tag > self.update_handler.get_current_version():
@@ -132,6 +134,7 @@ class MainWindow(MainGUI, QMainWindow):
             else:
                 self.prefs.new_release_tag = None
                 self.prefs.commit()
+                self.update_handler.cleanup()
 
     def refresh_update_lbl(self, version=None):
         if version:
