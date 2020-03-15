@@ -25,6 +25,9 @@ from PyQt5.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QLabel,
+    QErrorMessage,
+    QMessageBox,
+    QAction,
 )
 from github.GitRelease import GitRelease
 
@@ -38,7 +41,7 @@ from gui.dialogs.UpdateDialog import UpdateDialog
 from gui.widgets.PluginWidget import PluginWidget
 from gui.widgets.ProfileWidget import ProfileWidget
 from updates.UpdateHandler import UpdateHandler, UpdateStatus
-from utils import resources, settings
+from utils import resources, settings, errorhandling
 
 
 class MainWindow(MainGUI, QMainWindow):
@@ -50,6 +53,7 @@ class MainWindow(MainGUI, QMainWindow):
         MainGUI.__init__(self)
         QMainWindow.__init__(self, *args)
 
+        errorhandling.add_hook(self.except_hook)
         self.prefs = settings.get_instance()
 
         self.plugin_widgets: List[PluginWidget] = []
@@ -289,3 +293,15 @@ class MainWindow(MainGUI, QMainWindow):
             asyncio.ensure_future(w.coro_initialise())
 
             self.btn_plugins.setFixedWidth(widget_width)
+
+    def except_hook(self, type, value, traceback) -> None:
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText(f"Error ({type.__name__}):\n\n{value}")
+        msg.setWindowTitle("Error")
+
+        msg.addButton("Dismiss", QMessageBox.YesRole)
+        msg.exec()
+
+    def closeEvent(self, *args, **kwargs) -> None:
+        errorhandling.remove_hook(self.except_hook)

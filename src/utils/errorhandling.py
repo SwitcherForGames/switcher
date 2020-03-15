@@ -14,11 +14,28 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import sys
+from typing import Callable
+
+subscribers = []
+
+
+def add_hook(hook: Callable) -> None:
+    subscribers.append(hook)
+
+
+def remove_hook(hook: Callable) -> None:
+    subscribers.remove(hook)
 
 
 def init() -> None:
     sys.excepthook = hook
 
 
-def hook(*args):
-    sys.__excepthook__(*args)
+def hook(type, value, traceback):
+    for s in subscribers:
+        try:
+            s(type, value, traceback)
+        except:
+            pass
+
+    sys.__excepthook__(type, value, traceback)
