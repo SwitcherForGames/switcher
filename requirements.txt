@@ -1,7 +1,8 @@
+AsyncProcessScheduler==0.5.0b1
 requests==2.23.0
 PyYAML==5.3
 PyQt5==5.14.1
 aiohttp==3.6.2
 PyGithub==1.46
 qasync==0.9.4
-AsyncProcessScheduler==0.5.0b1
+winshell==0.6
