@@ -6,3 +6,4 @@ aiohttp==3.6.2
 PyGithub==1.46
 qasync==0.9.4
 winshell==0.6
+pypiwin32==223
