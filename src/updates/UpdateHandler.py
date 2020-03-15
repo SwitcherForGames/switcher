@@ -61,9 +61,8 @@ class DownloadThread(QThread):
 
     def run(self, priority=None) -> None:
         # Get latest release.
-        release: GitRelease = sorted(
-            online.get_switcher_releases(), key=lambda f: f.tag_name
-        )[0]
+        releases = online.get_switcher_releases()
+        release: GitRelease = releases[0]
 
         assets = release.raw_data["assets"]
         platform = Platform.get()
@@ -137,14 +136,14 @@ class UpdateHandler:
 
     async def get_latest_version(self):
         self.scheduler = Scheduler()
-        releases = await self.scheduler.map(
-            target=online.get_switcher_releases, args=[()]
-        )
+        releases = (
+            await self.scheduler.map(target=online.get_switcher_releases, args=[()])
+        )[0]
 
         self.prefs.last_update_check = time.time()
         self.prefs.commit()
 
-        return releases[0][0]
+        return releases[0]
 
     def get_current_version(self) -> str:
         with open("manifest.yaml", "r") as f:
