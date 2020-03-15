@@ -93,7 +93,8 @@ class DownloadThread(QThread):
         verified = self.verify_installer(location, _checksum)
         self.signal_verify_finished.emit(verified)
 
-        self.signal_installer_path.emit(location)
+        if verified:
+            self.signal_installer_path.emit(location)
 
     def verify_installer(self, location: str, expected_checksum: str) -> bool:
         real_checksum = checksum.sha256sum(location)

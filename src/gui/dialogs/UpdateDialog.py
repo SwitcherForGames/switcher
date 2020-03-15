@@ -77,6 +77,7 @@ class UpdateDialog(QDialog):
                 f"Error: checksums do not match. Downloaded installer is not genuine. "
                 f"\n\nThis is probably caused by a download error. Please try again."
             )
+            self.progress_bar.hide()
             return self.on_error()
 
         self.lbl_status.setText(
