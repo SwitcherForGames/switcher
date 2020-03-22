@@ -188,7 +188,12 @@ class MainWindow(MainGUI, QMainWindow):
         name = self.edit_profile_name.text()
 
         profile = Profile.create(name, feature)
-        self.plugin_handler.save_profile(plugin, profile)
+
+        try:
+            self.plugin_handler.save_profile(plugin, profile)
+        except Exception as e:
+            self.plugin_handler.delete_profile(plugin, profile)
+            raise e
 
         self._update_profiles_list(plugin)
 
