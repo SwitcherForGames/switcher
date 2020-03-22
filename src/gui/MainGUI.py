@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QCheckBox,
     QLineEdit,
+    QProgressBar,
 )
 
 
@@ -47,3 +48,5 @@ class MainGUI:
 
         self.edit_profile_name: QLineEdit = None
         self.lbl_update: QLabel = None
+
+        self.progress_save_profile: QProgressBar = None

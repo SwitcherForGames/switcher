@@ -150,6 +150,13 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QProgressBar" name="progress_save_profile">
+               <property name="value">
+                <number>24</number>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>
@@ -184,7 +191,7 @@
      <x>0</x>
      <y>0</y>
      <width>865</width>
-     <height>18</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

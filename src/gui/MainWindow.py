@@ -72,6 +72,9 @@ class MainWindow(MainGUI, QMainWindow):
     def setup_ui(self) -> None:
         uic.loadUi(resources.get_layout(), self)
 
+        self.progress_save_profile.hide()
+        self.progress_save_profile.setRange(0, 0)
+
         self.btn_plugins.clicked.connect(self.manage_plugins)
         self.btn_browse.clicked.connect(self.browse_for_game)
 
@@ -182,6 +185,8 @@ class MainWindow(MainGUI, QMainWindow):
         self.get_active_plugin().launch_game(Launcher.STEAM)
 
     def save_profile(self) -> None:
+        self.update_save_progress(True)
+
         plugin = self.get_active_plugin()
 
         feature = self.get_current_feature()
@@ -193,6 +198,7 @@ class MainWindow(MainGUI, QMainWindow):
             self.plugin_handler.save_profile(plugin, profile)
         except Exception as e:
             self.plugin_handler.delete_profile(plugin, profile)
+            self.update_save_progress(False)
             raise e
 
         dialog = QMessageBox()
@@ -201,6 +207,11 @@ class MainWindow(MainGUI, QMainWindow):
         dialog.exec()
 
         self._update_profiles_list(plugin)
+        self.update_save_progress(False)
+
+    def update_save_progress(self, in_progress: bool) -> None:
+        self.progress_save_profile.setVisible(in_progress)
+        self.btn_save_profile.setVisible(not in_progress)
 
     def apply_profile(self, profile: Profile) -> None:
         plugin = self.get_active_plugin()
