@@ -15,6 +15,7 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import asyncio
 import logging
+import webbrowser
 from typing import List, Optional
 
 from PyQt5 import uic
@@ -25,9 +26,7 @@ from PyQt5.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QLabel,
-    QErrorMessage,
     QMessageBox,
-    QAction,
 )
 from github.GitRelease import GitRelease
 
@@ -304,7 +303,12 @@ class MainWindow(MainGUI, QMainWindow):
         msg.setWindowTitle("Error")
 
         msg.addButton("Dismiss", QMessageBox.YesRole)
-        msg.exec()
+        msg.addButton("Report bug", QMessageBox.HelpRole)
+
+        if QMessageBox.Accepted == msg.exec():
+            webbrowser.open_new_tab(
+                "https://github.com/SwitcherForGames/switcher/issues/new"
+            )
 
     def closeEvent(self, *args, **kwargs) -> None:
         errorhandling.remove_hook(self.except_hook)
