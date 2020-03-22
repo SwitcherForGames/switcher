@@ -14,8 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
-
-import winshell
+from os.path import join
 
 from api.Platform import Platform
 
@@ -60,20 +59,29 @@ class PathEvaluator:
 
 
 class WindowsEvaluator(PathEvaluator):
+    def __init__(self):
+        import winshell
+
+        self.winshell = winshell
+
     def documents(self) -> str:
-        return winshell.my_documents()
+        return self.winshell.my_documents()
 
     def desktop(self) -> str:
-        return winshell.desktop()
+        return self.winshell.desktop()
 
 
 class NixEvaluator(PathEvaluator):
+    def desktop(self) -> str:
+        return join(self.home(), "Desktop")
+
+    def documents(self) -> str:
+        return join(self.home(), "Documents")
+
+
+class LinuxEvaluator(NixEvaluator):
     pass
 
 
 class MacEvaluator(NixEvaluator):
-    pass
-
-
-class LinuxEvaluator(NixEvaluator):
     pass
