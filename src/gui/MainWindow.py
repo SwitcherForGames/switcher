@@ -195,6 +195,11 @@ class MainWindow(MainGUI, QMainWindow):
             self.plugin_handler.delete_profile(plugin, profile)
             raise e
 
+        dialog = QMessageBox()
+        dialog.setText(f"Created profile: '{profile.name}'.")
+        dialog.setWindowTitle("Created profile")
+        dialog.exec()
+
         self._update_profiles_list(plugin)
 
     def apply_profile(self, profile: Profile) -> None:
