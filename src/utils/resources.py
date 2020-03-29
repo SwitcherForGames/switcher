@@ -33,3 +33,7 @@ def get_manage_plugins_layout() -> str:
 
 def get_update_dialog_layout() -> str:
     return f"res/layout/update_dialog.ui"
+
+
+def get_settings_layout() -> str:
+    return f"res/layout/settings_dialog.ui"

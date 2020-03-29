@@ -50,3 +50,5 @@ class MainGUI:
         self.lbl_update: QLabel = None
 
         self.progress_save_profile: QProgressBar = None
+
+        self.btn_settings: QPushButton = None

@@ -36,6 +36,7 @@ from api.PluginHandler import PluginHandler
 from api.profiles import ProfileType, Feature, SingleFeature, ComboFeature, Profile
 from gui.MainGUI import MainGUI
 from gui.dialogs.ManagePluginsDialog import ManagePluginsDialog
+from gui.dialogs.SettingsDialog import SettingsDialog
 from gui.dialogs.UpdateDialog import UpdateDialog
 from gui.widgets.PluginWidget import PluginWidget
 from gui.widgets.ProfileWidget import ProfileWidget
@@ -79,6 +80,7 @@ class MainWindow(MainGUI, QMainWindow):
         self.btn_browse.clicked.connect(self.browse_for_game)
 
         self.btn_save_profile.clicked.connect(self.save_profile)
+        self.btn_settings.clicked.connect(self.open_settings)
 
         self.btn_play.clicked.connect(self.on_play_clicked)
 
@@ -316,6 +318,10 @@ class MainWindow(MainGUI, QMainWindow):
             asyncio.ensure_future(w.coro_initialise())
 
             self.btn_plugins.setFixedWidth(widget_width)
+
+    def open_settings(self) -> None:
+        dialog = SettingsDialog()
+        dialog.exec()
 
     def except_hook(self, type, value, traceback) -> None:
         msg = QMessageBox()

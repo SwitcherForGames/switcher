@@ -170,6 +170,13 @@
          <widget class="QWidget" name="widget_4" native="true"/>
         </item>
         <item>
+         <widget class="QPushButton" name="btn_settings">
+          <property name="text">
+           <string>Settings</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btn_plugins">
           <property name="text">
            <string>Manage plugins</string>
