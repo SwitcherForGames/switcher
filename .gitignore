@@ -4,6 +4,7 @@ Output
 
 **.log
 .idea/misc.xml
+.idea/vcs.xml
 .idea/profile-switcher.iml
 
 # Created by https://www.gitignore.io/api/python,pycharm,visualstudiocode
