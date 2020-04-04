@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
-from typing import List, Dict
+from typing import Dict
 
 import yaml
 
@@ -36,6 +36,7 @@ class Settings:
     switcher_directory: str = files._switcher_directory
     last_update_check: float = 0
     new_release_tag: str = None
+    version = 1
 
     def __init__(self):
         self.__config_path = files.settings_path()

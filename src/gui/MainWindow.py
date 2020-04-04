@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (
 )
 from github.GitRelease import GitRelease
 
+from api import GameFinder
 from api.Launcher import Launcher
 from api.Plugin import Plugin
 from api.PluginHandler import PluginHandler
@@ -62,6 +63,8 @@ class MainWindow(MainGUI, QMainWindow):
         self.application = application
         self.plugin_handler: PluginHandler = application.plugin_handler
 
+        self.game_finder = GameFinder.get()
+
         self.update_handler: UpdateHandler = UpdateHandler()
         self.update_status = UpdateStatus.UNKNOWN
 
@@ -69,6 +72,7 @@ class MainWindow(MainGUI, QMainWindow):
         self.setup_ui()
 
         asyncio.ensure_future(self.check_for_updates())
+        asyncio.ensure_future(self.coro_find_games())
 
     def setup_ui(self) -> None:
         uic.loadUi(resources.get_layout(), self)
@@ -139,6 +143,12 @@ class MainWindow(MainGUI, QMainWindow):
                 self.prefs.new_release_tag = None
                 self.prefs.commit()
                 self.update_handler.cleanup()
+
+    async def coro_find_games(self):
+        games = await self.game_finder.coro_find_games()
+
+        for f, g in games.items():
+            print(g)
 
     def refresh_update_lbl(self, version=None):
         if version:
