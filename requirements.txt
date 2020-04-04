@@ -1,4 +1,4 @@
-AsyncProcessScheduler==0.5.0b1
+AsyncProcessScheduler==0.6.0b1
 requests==2.23.0
 PyYAML==5.3
 PyQt5==5.13.2
