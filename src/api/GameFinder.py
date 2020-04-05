@@ -21,7 +21,7 @@ from typing import List, Dict
 
 from scheduler.Scheduler import Scheduler
 
-from api import LauncherLibraryAnalyser
+from api import LibraryAnalyser
 from api.Platform import Platform
 
 
@@ -68,7 +68,7 @@ class WindowsGameFinder(GameFinder):
                         for f in os.listdir(program_files_folder)
                     ]:
 
-                        for analyser in LauncherLibraryAnalyser.get_all():
+                        for analyser in LibraryAnalyser.get_all():
                             if found := analyser.find_games(possible_library_folder):
                                 games = {**games, **found}
 
