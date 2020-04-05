@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Switcher"
-#define MyAppVersion "v0.2.0"
+#define MyAppVersion "v0.3.0"
 #define MyAppPublisher "Switcher For Games"
 #define MyAppURL "https://www.github.com/SwitcherForGames/switcher"
 #define MyAppExeName "main.exe"
