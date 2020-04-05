@@ -14,7 +14,7 @@ assert len(args) > 0, "New version must be supplied as an argument."
 
 new_tag = args[0]
 commit = "--commit" in args
-build = "v0.2.0" in args
+build = "--build" in args
 
 with open("manifest.yaml", "r") as f:
     tag = yaml.safe_load(f).get("version")
