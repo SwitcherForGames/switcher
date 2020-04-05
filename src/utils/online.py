@@ -54,7 +54,7 @@ def find_online_plugins() -> Tuple[List, List]:
     for p in plugins:
         description = p.description
 
-        if len(description) > len(template):
+        if description and len(description) > len(template):
             game = description[len(template) :]
 
             # Remove full stop if it exists.
