@@ -143,7 +143,10 @@ class UbisoftLibraryAnalyser(LibraryAnalyser):
         return "ubisoft" in name.lower() or "uplay" in name.lower()
 
     def get_game_folder(self, folder_in_program_files: str) -> str:
-        return join(folder_in_program_files, "games")
+        if os.path.exists(games := join(folder_in_program_files, "games")):
+            return games
+
+        return folder_in_program_files
 
 
 class GOGLibraryAnalyser(LibraryAnalyser):
