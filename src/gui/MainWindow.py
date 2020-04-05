@@ -36,6 +36,7 @@ from api.Plugin import Plugin
 from api.PluginHandler import PluginHandler
 from api.profiles import ProfileType, Feature, SingleFeature, ComboFeature, Profile
 from gui.MainGUI import MainGUI
+from gui.dialogs.InstallPluginsDialog import InstallPluginsDialog
 from gui.dialogs.ManagePluginsDialog import ManagePluginsDialog
 from gui.dialogs.SettingsDialog import SettingsDialog
 from gui.dialogs.UpdateDialog import UpdateDialog
@@ -155,11 +156,24 @@ class MainWindow(MainGUI, QMainWindow):
         unique = [loc for loc, _ in games.items() if loc not in cache]
 
         if unique or force:
-            print(f"Found unique games: {games.values()}")
+            logging.info(f"Found unique games: {games.values()}")
             self.prefs.games = list(games.keys())
             self.prefs.commit()
 
-            await self.plugin_handler.install_suggested_plugins(games)
+            to_install = await self.plugin_handler.suggest_plugins(games)
+            if to_install:
+                InstallPluginsDialog(
+                    self.application, self.plugin_handler, to_install
+                ).exec()
+            else:
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setText(
+                    "Could not discover any new plugins for installed games.\n\n"
+                    'Try using "Manage plugins" to look for community plugins and list all available plugins.'
+                )
+                msg.setWindowTitle("No plugins found")
+                msg.exec()
         else:
             print(f"No unique games found.")
 

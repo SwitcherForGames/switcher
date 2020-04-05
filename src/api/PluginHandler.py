@@ -103,14 +103,12 @@ class PluginHandler:
         uninstall = [key for key, value in changes.items() if not value]
 
         for p in install:
-            target = self.install_plugin(p)
-            self.save_installed_plugin_url(p, target)
+            self.install_plugin(p)
 
         for p in uninstall:
             self.uninstall_plugin(p)
-            self.save_uninstalled_plugin_url(p)
 
-    def install_plugin(self, url: str) -> Optional[str]:
+    def install_plugin(self, url: str) -> None:
         zipball = f"{url}/zipball/master"
         print(f"Downloading plugin from {zipball}")
 
@@ -128,9 +126,9 @@ class PluginHandler:
         shutil.move(
             join(self.plugins_folder, target), join(self.plugins_folder, dir_name)
         )
-        return dir_name
+        self.save_installed_plugin_url(url, dir_name)
 
-    async def install_suggested_plugins(self, games: Dict[str, str]) -> None:
+    async def suggest_plugins(self, games: Dict[str, str]) -> List[str]:
         trusted, _ = online.find_online_plugins()
         threshold = 0.9
 
@@ -155,13 +153,13 @@ class PluginHandler:
                 install.append(plugin)
 
         installed_plugin_urls = self.get_installed_plugin_urls()
-        for url in [p.url for p in install if p.url not in installed_plugin_urls]:
-            target = self.install_plugin(url)
-            self.save_installed_plugin_url(url, target)
+        return [p.url for p in install if p.url not in installed_plugin_urls]
 
     def uninstall_plugin(self, url: str) -> None:
         target = self.load_yaml()["urls"][url]
         shutil.rmtree(join(self.plugins_folder, target))
+
+        self.save_uninstalled_plugin_url(url)
         print(f"Removed plugin at {target}.")
 
     def get_installed_plugin_urls(self) -> List[str]:
