@@ -40,6 +40,16 @@ g = Github()
 
 
 def find_online_plugins() -> Tuple[List, List]:
+    """
+    Finds available plugins from GitHub.
+
+    Returns
+    -------
+    trusted : List
+        List containing trusted plugins, published by SwitcherForGames.
+    untrusted : List
+        List containing untrusted plugins, published by the community.
+    """
     plugins = search_plugins()
     for p in plugins:
         description = p.description

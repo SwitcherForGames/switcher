@@ -52,3 +52,4 @@ class MainGUI:
         self.progress_save_profile: QProgressBar = None
 
         self.btn_settings: QPushButton = None
+        self.btn_autoinstall: QPushButton = None

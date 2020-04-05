@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
-from typing import Dict
+from typing import Dict, List
 
 import yaml
 
@@ -37,6 +37,7 @@ class Settings:
     last_update_check: float = 0
     new_release_tag: str = None
     version = 1
+    games: List[str] = []
 
     def __init__(self):
         self.__config_path = files.settings_path()

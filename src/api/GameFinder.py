@@ -36,9 +36,10 @@ def get() -> "GameFinder":
 
 class GameFinder(ABC):
     def __init__(self):
-        self.scheduler = Scheduler(run_in_thread=True)
+        self.scheduler = None
 
     async def coro_find_games(self) -> Dict[str, str]:
+        self.scheduler = Scheduler(run_in_thread=True)
         result = await self.scheduler.map(target=self.find_games, args=[(),])
         return result[0]
 

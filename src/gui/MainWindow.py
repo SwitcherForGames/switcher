@@ -87,6 +87,7 @@ class MainWindow(MainGUI, QMainWindow):
         self.btn_settings.clicked.connect(self.open_settings)
 
         self.btn_play.clicked.connect(self.on_play_clicked)
+        self.btn_autoinstall.clicked.connect(self.autoinstall_plugins)
 
         self.lbl_update = QLabel()
         self.lbl_update.mousePressEvent = self.on_update_lbl_clicked
@@ -144,11 +145,23 @@ class MainWindow(MainGUI, QMainWindow):
                 self.prefs.commit()
                 self.update_handler.cleanup()
 
-    async def coro_find_games(self):
+    def autoinstall_plugins(self) -> None:
+        asyncio.ensure_future(self.coro_find_games(force=True))
+
+    async def coro_find_games(self, force=False):
         games = await self.game_finder.coro_find_games()
 
-        for f, g in games.items():
-            print(g)
+        cache = self.prefs.games
+        unique = [loc for loc, _ in games.items() if loc not in cache]
+
+        if unique or force:
+            print(f"Found unique games: {games.values()}")
+            self.prefs.games = list(games.keys())
+            self.prefs.commit()
+
+            await self.plugin_handler.install_suggested_plugins(games)
+        else:
+            print(f"No unique games found.")
 
     def refresh_update_lbl(self, version=None):
         if version:

@@ -184,6 +184,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="btn_autoinstall">
+          <property name="text">
+           <string>Auto-install trusted plugins</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QWidget" name="widget_3" native="true"/>
         </item>
        </layout>
@@ -198,7 +205,7 @@
      <x>0</x>
      <y>0</y>
      <width>865</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>

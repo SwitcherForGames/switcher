@@ -18,6 +18,7 @@ import os
 import shutil
 import sys
 import zipfile
+from difflib import SequenceMatcher
 from io import BytesIO
 from os.path import join
 from typing import Optional, List, Dict
@@ -32,6 +33,7 @@ from api.Platform import Platform
 from api.Plugin import Plugin
 from api.files import make_path
 from api.profiles import Profile
+from utils import online
 
 
 class PluginHandler:
@@ -108,7 +110,7 @@ class PluginHandler:
             self.uninstall_plugin(p)
             self.save_uninstalled_plugin_url(p)
 
-    def install_plugin(self, url: str) -> str:
+    def install_plugin(self, url: str) -> Optional[str]:
         zipball = f"{url}/zipball/master"
         print(f"Downloading plugin from {zipball}")
 
@@ -127,6 +129,35 @@ class PluginHandler:
             join(self.plugins_folder, target), join(self.plugins_folder, dir_name)
         )
         return dir_name
+
+    async def install_suggested_plugins(self, games: Dict[str, str]) -> None:
+        trusted, _ = online.find_online_plugins()
+        threshold = 0.9
+
+        install = []
+        for plugin in trusted:
+            matches = []
+
+            for loc, game in games.items():
+                match = SequenceMatcher(None, plugin.game, game).ratio()
+                matches.append(match)
+
+                if match >= 1:
+                    break
+                elif (
+                    match < threshold
+                    and plugin.game in game
+                    or plugin.game.replace(":", "") in game.replace(":", "")
+                ):
+                    matches.append(threshold)
+
+            if max(matches) >= threshold:
+                install.append(plugin)
+
+        installed_plugin_urls = self.get_installed_plugin_urls()
+        for url in [p.url for p in install if p.url not in installed_plugin_urls]:
+            target = self.install_plugin(url)
+            self.save_installed_plugin_url(url, target)
 
     def uninstall_plugin(self, url: str) -> None:
         target = self.load_yaml()["urls"][url]
