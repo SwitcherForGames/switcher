@@ -13,6 +13,10 @@ Possible use cases:
 - You switch between VR and non-VR mode in games, which means changing graphics settings and keybindings every time.
 - You want to back up your game saves, or switch between game saves for two different players in a game with only one save slot.
 
+![Screenshot of the main Switcher window.](/docs/img/switcher.png)
+
+> **Disclaimer:** The images shown in the above screenshot are not distributed with Switcher, and there is no affiliation between their copyright holders and the Switcher developers.
+
 ## Supported games
 
 Switcher uses a plugin architecture to theoretically support any game. Plugins are automatically downloaded from GitHub, providing a seamless experience. 
@@ -27,11 +31,11 @@ To install Switcher, go to the [Releases](https://github.com/SwitcherForGames/sw
 
 ## Security
 
-Security is important. This section explains why Switcher can be trusted on your system.
+Security is important to us. This section explains why Switcher can be trusted on your system.
 
 ### Plugins
 
-Plugins are able to run arbitrary code on your system. To mitigate this huge security risk:
+Plugins are able to run arbitrary code on your system. To mitigate this, potentially huge, security risk:
 
 - Only plugins published by the [SwitcherForGames](https://github.com/SwitcherForGames) can be installed by default.
 - To allow safe installation of community plugins, they will be vetted and forked by [SwitcherForGames](https://github.com/SwitcherForGames).
