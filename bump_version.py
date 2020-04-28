@@ -71,7 +71,7 @@ if build:
     os.system("iscc windows.iss")
 
     print(f"\n\n------ PRINTING RELEASE TEMPLATE ------\n")
-    checksum = subprocess.check_output('bash -c "sha256sum Output/switcher-setup.exe"', shell=True).decode("utf-8")
+    checksum = subprocess.check_output('bash -c "sha256sum Output/SwitcherSetup.exe"', shell=True).decode("utf-8")
     template = f"### New features\n\n\n\n" + \
                f"### Checksums\n\n" + \
                f"`sha256` checksums are used to verify the integrity of the installer.\n\n" + \

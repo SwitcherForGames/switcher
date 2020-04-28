@@ -5,7 +5,7 @@
 #define MyAppVersion "v0.3.0"
 #define MyAppPublisher "Switcher For Games"
 #define MyAppURL "https://www.github.com/SwitcherForGames/switcher"
-#define MyAppExeName "main.exe"
+#define MyAppExeName "switcher.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -23,7 +23,7 @@ DisableProgramGroupPage=yes
 LicenseFile=C:\switcher\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputBaseFilename=switcher-setup
+OutputBaseFilename=SwitcherSetup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -35,7 +35,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\switcher\dist\main\main.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\switcher\dist\main\switcher.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\switcher\dist\main\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
