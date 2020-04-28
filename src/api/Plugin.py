@@ -166,6 +166,28 @@ class Plugin(ABC):
 
         return await self._download_header()
 
+    @final
+    async def get_library_hero(self) -> Optional[str]:
+        """
+        Gets the path to the "library_hero" image. If it needs to be downloaded,
+        it will download the image first.
+
+        Returns
+        -------
+        Optional[str]
+            The absolute path to the "library_hero" image.
+        """
+        items = os.listdir(self.here())
+        stripped = [path.splitext(i)[0] for i in items]
+        hero = "library_hero"
+
+        # Check if exists.
+        if hero in stripped:
+            name = items[stripped.index(hero)]
+            return path.join(self.here(), name)
+
+        return await self._download_library_hero()
+
     async def _download_header(self) -> Optional[str]:
         """
         Downloads the header image. By default it will use the image from the Steam page.
@@ -179,7 +201,42 @@ class Plugin(ABC):
         url = f"http://cdn.akamai.steamstatic.com/steam/apps/{steam_id}/header.jpg"
         return self._perform_download(url, "header")
 
+    async def _download_library_hero(self) -> Optional[str]:
+        """
+        Downloads the "library_hero" image. By default, it will use the image from the Steam page.
+
+        Returns
+        -------
+        Optional[str]
+            The absolute path to the downloaded image.
+        """
+        steam_id = int(self.get(Keys.STEAM_ID))
+        if not steam_id:
+            return None
+
+        url = (
+            f"http://cdn.akamai.steamstatic.com/steam/apps/{steam_id}/library_hero.jpg"
+        )
+        return self._perform_download(url, "library_hero")
+
     def _perform_download(self, url: str, filename: str, ext: str = "jpg") -> str:
+        """
+        Downloads an image file.
+
+        Parameters
+        ----------
+        url : str
+            The URL to download the file from.
+        filename : str
+            The name with which the file will be saved.
+        ext : str
+            The extension type of the file which will be saved.
+
+        Returns
+        -------
+        str
+            The absolute path to the downloaded file.
+        """
         logging.info(f"Downloading header image from {url} as {filename}")
         data = requests.get(url).content
         filepath = f"{path.join(self.here(), filename)}.{ext}"

@@ -18,7 +18,9 @@ import logging
 import webbrowser
 from typing import List, Optional
 
-from PyQt5 import uic
+from PyQt5 import uic, QtGui
+from PyQt5.QtCore import Qt, QRect
+from PyQt5.QtGui import QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import (
     QMainWindow,
     QDialog,
@@ -27,6 +29,7 @@ from PyQt5.QtWidgets import (
     QListWidgetItem,
     QLabel,
     QMessageBox,
+    QGraphicsBlurEffect,
 )
 from github.GitRelease import GitRelease
 
@@ -65,6 +68,7 @@ class MainWindow(MainGUI, QMainWindow):
         self.plugin_handler: PluginHandler = application.plugin_handler
 
         self.game_finder = GameFinder.get()
+        self.effect = QGraphicsBlurEffect()
 
         self.update_handler: UpdateHandler = UpdateHandler()
         self.update_status = UpdateStatus.UNKNOWN
@@ -220,6 +224,8 @@ class MainWindow(MainGUI, QMainWindow):
         self._setup_check_boxes(features)
         self._update_profiles_list(plugin)
 
+        asyncio.ensure_future(self._update_background(plugin))
+
     def on_play_clicked(self) -> None:
         self.get_active_plugin().launch_game(Launcher.STEAM)
 
@@ -356,6 +362,9 @@ class MainWindow(MainGUI, QMainWindow):
 
             self.btn_plugins.setFixedWidth(widget_width)
 
+    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
+        asyncio.ensure_future(self._update_background(self.get_active_plugin()))
+
     def open_settings(self) -> None:
         dialog = SettingsDialog()
         dialog.exec()
@@ -376,3 +385,27 @@ class MainWindow(MainGUI, QMainWindow):
 
     def closeEvent(self, *args, **kwargs) -> None:
         errorhandling.remove_hook(self.except_hook)
+
+    async def _update_background(self, plugin: Plugin) -> None:
+        backgrnd = QPixmap(await plugin.get_library_hero())
+        aspect_ratio = backgrnd.width() / backgrnd.height()
+
+        rect = self.size()
+        # rect.setWidth(rect.width() * aspect_ratio)
+        rect.setHeight(rect.height() * aspect_ratio)
+
+        xmargin = (rect.width() - backgrnd.width()) / aspect_ratio / 2
+        backgrnd = backgrnd.copy(
+            QRect(xmargin, 0, rect.width() - xmargin, rect.height())
+        )
+
+        backgrnd = backgrnd.scaled(
+            self.size(), Qt.KeepAspectRatio, transformMode=Qt.SmoothTransformation
+        )
+
+        palette = QPalette()
+        palette.setBrush(QPalette.Background, QBrush(backgrnd))
+        self.setPalette(palette)
+
+        # self.effect.setBlurRadius(10)
+        # self.setGraphicsEffect(self.effect)
