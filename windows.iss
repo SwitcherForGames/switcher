@@ -46,3 +46,11 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
+[Registry]
+Root: HKCR; Subkey: "switcher"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "switcher"; ValueType: string; ValueName: ""; ValueData: "URL:Switcher custom protocol handler"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "switcher"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""; Flags: uninsdeletekey
+Root: HKCR; Subkey: "switcher\DefaultIcon"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "switcher\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{#MyAppExeName},1"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "switcher\Shell\open\command"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "switcher\Shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey
