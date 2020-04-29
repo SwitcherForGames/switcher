@@ -13,31 +13,28 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
+import sys
+from typing import Optional
+
+_args = sys.argv
 
 
-def get_layout() -> str:
-    return f"res/layout/main_window.ui"
+def magic_link() -> Optional[str]:
+    """
+    If Switcher was opened from the website with a "magic link", the code associated with the link
+    will be returned.
 
+    Returns
+    -------
+    link: Optional[str]
+        If there is a magic link, the code is returned; otherwise, None.
+    """
+    relevant = list(filter(lambda a: "magic-link" in a, _args))
 
-def get_plugin_item_layout() -> str:
-    return f"res/layout/plugin_item.ui"
+    if relevant:
+        argument = relevant[0]
+        code = argument.split("code=")[-1]
 
+        return code
 
-def get_profile_item_layout() -> str:
-    return f"res/layout/profile_item.ui"
-
-
-def get_manage_plugins_layout() -> str:
-    return f"res/layout/manage_plugins.ui"
-
-
-def get_update_dialog_layout() -> str:
-    return f"res/layout/update_dialog.ui"
-
-
-def get_create_plugin_dialog_layout() -> str:
-    return f"res/layout/create_plugin_dialog.ui"
-
-
-def get_settings_layout() -> str:
-    return f"res/layout/settings_dialog.ui"
+    return None
