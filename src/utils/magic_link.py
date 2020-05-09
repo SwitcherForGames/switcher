@@ -15,11 +15,13 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import difflib
 import json
+import logging
 import os
 from pathlib import Path
 from typing import Dict, Optional
 
 import requests
+from requests import Response
 from scheduler.Scheduler import Scheduler
 
 from api.PathEvaluator import PathEvaluator
@@ -40,8 +42,8 @@ async def post_data(code: str, data: str) -> None:
     """
     scheduler = Scheduler(run_in_thread=True)
 
-    r = (await scheduler.map(_do_post, args=[(code, data,)]))[0]
-    print(r.status_code, r.reason)
+    r: Response = (await scheduler.map(_do_post, args=[(code, data,)]))[0]
+    logging.info(f"Magic link request: {r.status_code}, {r.reason}")
 
 
 def _do_post(code, data) -> requests.Response:

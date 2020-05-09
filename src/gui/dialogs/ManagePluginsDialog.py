@@ -75,6 +75,8 @@ class ManagePluginsDialog(QDialog):
         self.add_items(self.model1, trusted)
         self.add_items(self.model2, community)
 
+        self.add_dev_items(self.model2, self.installed)
+
         self.tbl1.resizeColumnsToContents()
         self.tbl2.resizeColumnsToContents()
 
@@ -92,6 +94,19 @@ class ManagePluginsDialog(QDialog):
 
             print(p.description)
             model.appendRow([checkbox, QStandardItem(p.game), QStandardItem(p.author)])
+
+    def add_dev_items(self, model, items: Dict[str, str]) -> None:
+        for key, value in items.items():
+            if not key.startswith("DEV"):
+                continue
+
+            checkbox = QStandardItem(True)
+            checkbox.setCheckable(True)
+            checkbox.setText("Installed")
+            checkbox.url = key
+            checkbox.setCheckState(Qt.Checked)
+
+            model.appendRow([checkbox, QStandardItem(key), QStandardItem("dev")])
 
     def on_apply_clicked(self) -> None:
         self.accept()

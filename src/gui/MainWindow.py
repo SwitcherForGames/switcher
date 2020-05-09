@@ -37,6 +37,7 @@ from api.PluginHandler import PluginHandler
 from api.profiles import ProfileType, Feature, SingleFeature, ComboFeature, Profile
 from gui.MainGUI import MainGUI
 from gui.dialogs.CreatePluginDialog import CreatePluginDialog
+from gui.dialogs.DevInstallPluginDialog import DevInstallPluginDialog
 from gui.dialogs.InstallPluginsDialog import InstallPluginsDialog
 from gui.dialogs.ManagePluginsDialog import ManagePluginsDialog
 from gui.dialogs.SettingsDialog import SettingsDialog
@@ -120,6 +121,9 @@ class MainWindow(MainGUI, QMainWindow):
 
         if code := args.magic_link():
             CreatePluginDialog(self.application, self.game_finder, code).exec()
+
+        if code := args.dev_install_link():
+            DevInstallPluginDialog(self.application, self.plugin_handler, [code]).exec()
 
     async def check_for_updates(self, force=False):
         if force or self.update_handler.should_check_for_updates():

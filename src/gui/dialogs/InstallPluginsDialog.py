@@ -13,7 +13,6 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-import os
 from typing import List
 
 from PyQt5 import uic
@@ -47,9 +46,12 @@ class InstallPluginsDialog(QDialog):
         self.progress_bar.setRange(0, 0)
         self.finished = False
 
-        self.install_thread = InstallThread(plugin_handler, urls)
+        self.install_thread = self.create_thread(plugin_handler, urls)
         self.install_thread.progress_signal.connect(self.on_progress)
         self.install_thread.start()
+
+    def create_thread(self, plugin_handler, urls) -> QThread:
+        return InstallThread(plugin_handler, urls)
 
     def on_progress(self, done, total, url: str):
         if done >= total:

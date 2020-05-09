@@ -26,13 +26,34 @@ def magic_link() -> Optional[str]:
 
     Returns
     -------
-    link: Optional[str]
+    link: str, None
         If there is a magic link, the code is returned; otherwise, None.
     """
-    relevant = list(filter(lambda a: "magic-link" in a, _args))
+    filt = list(filter(lambda a: "magic-link" in a, _args))
 
-    if relevant:
-        argument = relevant[0]
+    if filt:
+        argument = filt[0]
+        code = argument.split("code=")[-1]
+
+        return code
+
+    return None
+
+
+def dev_install_link() -> Optional[str]:
+    """
+    If Switcher was opened with a "dev-install" link, the code associated with the link
+    will be returned.
+
+    Returns
+    -------
+    link: str, None
+        The code from the link if it exists; otherwise, None.
+    """
+    filt = list(filter(lambda a: "dev-install" in a, _args))
+
+    if filt:
+        argument = filt[0]
         code = argument.split("code=")[-1]
 
         return code

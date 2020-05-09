@@ -13,28 +13,18 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-import time
+import logging
+from typing import Optional
 
-from PyQt5.QtWidgets import QApplication
+import requests
+from requests import Response
 
-from api.PluginHandler import PluginHandler
-from gui.MainWindow import MainWindow
+url = "https://switcherforgames.com/api/switcher/dev-get-plugin-yaml"
 
 
-class Application(QApplication):
-    def __init__(self, argv):
-        super(Application, self).__init__(argv)
-        self.plugin_handler = PluginHandler()
-        self.window: MainWindow = None
+def get_plugin_yaml_text(code: str) -> Optional[str]:
+    response: Response = requests.get(f"{url}?code={code}")
+    logging.info(f"Dev-install request: {response.status_code}, {response.reason}")
 
-    def launch(self) -> None:
-        self.window = MainWindow(self)
-        self.window.show()
-
-    def restart(self):
-        self.plugin_handler = PluginHandler()
-        if self.window:
-            self.window.close()
-
-        time.sleep(0.5)
-        self.launch()
+    yaml: str = response.text
+    return yaml

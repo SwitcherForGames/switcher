@@ -17,6 +17,7 @@ import logging
 import os
 import shutil
 import sys
+import uuid
 import zipfile
 from difflib import SequenceMatcher
 from io import BytesIO
@@ -127,6 +128,27 @@ class PluginHandler:
             join(self.plugins_folder, target), join(self.plugins_folder, dir_name)
         )
         self.save_installed_plugin_url(url, dir_name)
+
+    def dev_install_plugin(self, yaml_text: str) -> None:
+        """
+        Installs a plugin in developer mode, when supplied with the text
+        of its YAML file as a string.
+
+        Parameters
+        ----------
+        yaml_text : str
+            The access code for the plugin.
+        """
+        logging.info(f"Installing plugin in development mode: {yaml_text}.")
+        target = f"DEV-{uuid.uuid4()}"
+
+        target_dir = join(self.plugins_folder, target)
+        os.makedirs(target_dir)
+
+        with open(join(target_dir, "plugin.yaml"), "w+") as f:
+            f.write(yaml_text)
+
+        self.save_installed_plugin_url(target, target)
 
     async def suggest_plugins(self, games: Dict[str, str]) -> List[str]:
         trusted, _ = online.find_online_plugins()
