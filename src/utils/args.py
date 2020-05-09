@@ -13,10 +13,24 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
+import logging
 import sys
 from typing import Optional
 
 _args = sys.argv
+
+
+def cleanup() -> None:
+    global _args
+
+    logging.info(f"Arguments before cleanup: {sys.argv}")
+    blacklist = ("magic-link", "dev-install")
+
+    args = list(filter(lambda a: not any([b in a for b in blacklist]), _args))
+    sys.argv = args
+
+    logging.info(f"Arguments after cleanup: {sys.argv}")
+    _args = sys.argv
 
 
 def magic_link() -> Optional[str]:
@@ -34,6 +48,8 @@ def magic_link() -> Optional[str]:
     if filt:
         argument = filt[0]
         code = argument.split("code=")[-1]
+
+        logging.info(f"Found magic-link code: {code}")
 
         return code
 
@@ -55,6 +71,8 @@ def dev_install_link() -> Optional[str]:
     if filt:
         argument = filt[0]
         code = argument.split("code=")[-1]
+
+        logging.info(f"Found dev-install code: {code}")
 
         return code
 

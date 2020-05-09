@@ -19,6 +19,7 @@ from PyQt5.QtWidgets import QApplication
 
 from api.PluginHandler import PluginHandler
 from gui.MainWindow import MainWindow
+from utils import args
 
 
 class Application(QApplication):
@@ -36,5 +37,6 @@ class Application(QApplication):
         if self.window:
             self.window.close()
 
+        args.cleanup()
         time.sleep(0.5)
         self.launch()
