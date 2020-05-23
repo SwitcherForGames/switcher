@@ -13,35 +13,22 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
+from typing import List
+
+from PyQt5.QtWidgets import QDialog
+from send2trash.plat_other import uid
+
+from utils import resources
 
 
-def get_layout() -> str:
-    return f"res/layout/main_window.ui"
+class InstallFromGithubIDDialog(QDialog):
+    def __init__(self, application, plugin_handler, ids: List[int]):
+        super(InstallFromGithubIDDialog, self).__init__()
 
+        self.ids = ids
+        self.plugin_handler = plugin_handler
+        self.application = application
 
-def get_plugin_item_layout() -> str:
-    return f"res/layout/plugin_item.ui"
+        uid.loadUi(resources.get_github_install_dialog_layout())
 
-
-def get_profile_item_layout() -> str:
-    return f"res/layout/profile_item.ui"
-
-
-def get_manage_plugins_layout() -> str:
-    return f"res/layout/manage_plugins.ui"
-
-
-def get_update_dialog_layout() -> str:
-    return f"res/layout/update_dialog.ui"
-
-
-def get_create_plugin_dialog_layout() -> str:
-    return f"res/layout/create_plugin_dialog.ui"
-
-
-def get_github_install_dialog_layout() -> str:
-    return f"res/layout/github_install_dialog.ui"
-
-
-def get_settings_layout() -> str:
-    return f"res/layout/settings_dialog.ui"
+        self.setWindowTitle("Install plugins")

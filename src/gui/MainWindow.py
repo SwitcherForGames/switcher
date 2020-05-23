@@ -15,6 +15,7 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 import asyncio
 import logging
+import time
 import webbrowser
 from typing import List, Optional
 
@@ -124,6 +125,11 @@ class MainWindow(MainGUI, QMainWindow):
 
         if code := args.dev_install_link():
             DevInstallPluginDialog(self.application, self.plugin_handler, [code]).exec()
+
+        if github_id := args.github_install_link():
+            InstallFromGithubIDDialog(
+                self.application, self.plugin_handler, github_id
+            ).exec()
 
     async def check_for_updates(self, force=False):
         if force or self.update_handler.should_check_for_updates():

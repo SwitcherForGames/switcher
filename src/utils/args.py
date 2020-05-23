@@ -56,6 +56,32 @@ def magic_link() -> Optional[str]:
     return None
 
 
+def github_install_link() -> Optional[int]:
+    """
+    If Switcher was opened with a "install-plugin" link,
+    the GitHub ID for the plugin's repository will be returned.
+
+    Returns
+    -------
+    id: int, None
+        The GitHub ID from the link if it exists; otherwise, None.
+    """
+    filt = list(filter(lambda a: "install-plugin" in a, _args))
+
+    if filt:
+        argument = filt[0]
+        id = argument.split("github=")[-1]
+
+        logging.info(f"Found install-plugin Github ID: {id}")
+
+        try:
+            return int(id)
+        except:
+            pass
+
+    return None
+
+
 def dev_install_link() -> Optional[str]:
     """
     If Switcher was opened with a "dev-install" link, the code associated with the link

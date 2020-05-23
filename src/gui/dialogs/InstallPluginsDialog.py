@@ -36,7 +36,7 @@ class InstallPluginsDialog(QDialog):
 
         uic.loadUi(resources.get_update_dialog_layout(), self)
 
-        self.setWindowTitle("Install update")
+        self.setWindowTitle("Install plugins")
 
         self.lbl_status.setText("Installing plugins...")
         self.btn_cancel.clicked.connect(self.on_cancel_clicked)
