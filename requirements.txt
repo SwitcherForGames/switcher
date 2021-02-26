@@ -1,4 +1,4 @@
-aiohttp==3.6.2
+aiohttp==3.7.4
 AsyncProcessScheduler==0.6.0b1
 PyGithub==1.46
 pypiwin32==223
